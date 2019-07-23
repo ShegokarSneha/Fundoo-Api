@@ -1,0 +1,5 @@
+package com.bridgelabz.Fundoo.repository;
+
+public interface NoteRepository {
+
+}

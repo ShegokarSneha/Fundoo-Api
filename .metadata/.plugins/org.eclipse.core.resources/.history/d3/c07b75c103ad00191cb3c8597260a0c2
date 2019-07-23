@@ -1,0 +1,22 @@
+package com.bridgelabz.Fundoo.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bridgelabz.Fundoo.dto.NoteDto;
+import com.bridgelabz.Fundoo.result.NoteStatus;
+
+@RestController
+@RequestMapping("/note")
+public class NoteController {
+	
+	/********************* Create Note **********************/
+	public NoteStatus createNote(NoteDto notedto, HttpServletRequest request) {
+		NoteStatus status = null;
+		return status;
+	}
+	
+
+}

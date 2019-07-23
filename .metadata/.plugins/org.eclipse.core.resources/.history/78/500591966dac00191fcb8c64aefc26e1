@@ -1,0 +1,40 @@
+package com.bridgelabz.Fundoo.model;
+
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+@Document(collection = "Register")
+public class User {
+	
+	@Id
+	private String id;
+
+	@Field("Access_Token")
+	private String token;
+
+	@Field("First_Name")
+	private String firstname;
+
+	@Field("Last_Name")
+	private String lastname;
+
+	@Field("User_Name")
+	private String username;
+
+	@Field("Email_Id")
+	private String email;
+
+	@Field("User_Password")
+	private String password;
+
+	@Field("Registration_Date")
+	private LocalDateTime date;
+
+	@Field("Verification")
+	private boolean isVerfied;
+
+
+}

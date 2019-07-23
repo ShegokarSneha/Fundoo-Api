@@ -1,0 +1,41 @@
+package com.bridgelabz.Fundoo.accesstoken;
+
+import org.springframework.stereotype.Component;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
+
+@Component
+public class AccessToken {
+	
+
+	private String set = "secret";
+
+	public String generateAccessToken(long id) {
+		
+		String token = "";
+		Algorithm algorithm = Algorithm.HMAC256(set);
+		token = JWT.create().withClaim("name", id).sign(algorithm);
+
+		return token;
+	}
+	
+	
+	public long verifyAccessToken(String token) {
+		long id;
+		Verification verification = null;
+		System.out.println("hi");
+		Verification verfication = JWT.require(Algorithm.HMAC256(set));
+		JWTVerifier jwtVerifier = verification.build();
+		DecodedJWT decodedJWT = jwtVerifier.verify(token);
+		Claim claim = decodedJWT.getClaim("name");
+		id = claim.asLong();
+		System.out.println(id);
+		return id;
+	}
+
+}

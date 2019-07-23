@@ -1,0 +1,8 @@
+package com.bridgelabz.Fundoo.model;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "Register")
+public class User {
+
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Spring AOP Annotation/src/main/java/com/bridgelabz/Config/Beanaop.xml&apos; to &apos;Beanaopannotation.xml&apos;" description="Rename resource &apos;Beanaop.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/com/bridgelabz/Config/Beanaop.xml" name="Beanaopannotation.xml" stamp="1563175387415" updateReferences="true"/>
+</session>

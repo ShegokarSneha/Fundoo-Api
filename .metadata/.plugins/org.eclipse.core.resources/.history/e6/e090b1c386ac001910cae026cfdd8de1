@@ -1,0 +1,10 @@
+package com.bridgelabz.Fundoo.services;
+
+import java.util.Optional;
+
+import com.bridgelabz.Fundoo.model.Note;
+
+public class NoteServiceInterface {
+	
+
+}

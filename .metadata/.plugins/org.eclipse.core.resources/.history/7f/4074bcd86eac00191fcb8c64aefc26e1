@@ -1,0 +1,9 @@
+package com.bridgelabz.Fundoo.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.bridgelabz.Fundoo.model.User;
+
+public interface Repository extends MongoRepository<User, Long>{
+
+}

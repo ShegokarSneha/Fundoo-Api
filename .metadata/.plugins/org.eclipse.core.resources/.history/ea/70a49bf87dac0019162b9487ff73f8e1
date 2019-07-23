@@ -1,0 +1,5 @@
+package com.bridgelabz.Fundoo.dto;
+
+public class NoteDto {
+
+}

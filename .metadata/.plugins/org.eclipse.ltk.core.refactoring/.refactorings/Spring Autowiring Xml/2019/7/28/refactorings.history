@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Spring Autowiring Xml/src/main/java/com/bridgelabz/Config/beanAutowiring.xml&apos; to &apos;BeanAutowiringXml.xml&apos;" description="Rename resource &apos;beanAutowiring.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/com/bridgelabz/Config/beanAutowiring.xml" name="BeanAutowiringXml.xml" stamp="1562927262830" updateReferences="true"/>
+</session>

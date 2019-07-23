@@ -1,0 +1,5 @@
+package com.bridgelabz.Fundoo.accesstoken;
+
+public class AccessToken {
+
+}

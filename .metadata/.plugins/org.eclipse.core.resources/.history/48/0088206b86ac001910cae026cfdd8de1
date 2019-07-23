@@ -1,0 +1,14 @@
+package com.bridgelabz.Fundoo.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.bridgelabz.Fundoo.model.User;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface Repository extends MongoRepository<User, String> {
+	
+	public Optional<User> findByEmail(String email);
+
+}

@@ -1,0 +1,6 @@
+package com.bridgelabz.Fundoo.services;
+
+public interface NoteServiceInterface {
+	
+
+}

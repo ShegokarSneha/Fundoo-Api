@@ -1,0 +1,24 @@
+package com.bridgelabz.Fundoo.mailsender;
+
+import java.util.Properties;
+
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+
+public class ConfirmationMailSender {
+	
+	@Autowired
+	private JavaMailSender javaMailSender;
+	
+	public void sendEmail(String email, String subject, String body) {
+		
+		Properties properties = System.getProperties();
+		
+		Session session = Session.getDefaultInstance(properties);
+		MimeMessage message = new MimeMessage(session);
+	}
+
+}

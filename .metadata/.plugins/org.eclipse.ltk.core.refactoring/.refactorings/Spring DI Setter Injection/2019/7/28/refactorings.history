@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Spring DI Setter Injection/src/main/java/com/bridgelabz/Config/beans.xml&apos; to &apos;beansSetterInjection.xml&apos;" description="Rename resource &apos;beans.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/com/bridgelabz/Config/beans.xml" name="beansSetterInjection.xml" stamp="1562915069651" updateReferences="true"/>
+</session>

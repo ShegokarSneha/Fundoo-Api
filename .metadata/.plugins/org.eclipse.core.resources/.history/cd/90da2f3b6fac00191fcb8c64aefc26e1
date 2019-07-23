@@ -1,0 +1,5 @@
+package com.bridgelabz.Fundoo.service;
+
+public interface ServiceInterface {
+
+}

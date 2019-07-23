@@ -1,0 +1,21 @@
+package com.bridgelabz.Fundoo.services;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bridgelabz.Fundoo.dto.NoteDto;
+import com.bridgelabz.Fundoo.repository.NoteRepository;
+import com.bridgelabz.Fundoo.result.NoteStatus;
+
+public class NoteServiceImplementation implements NoteServiceInterface {
+	
+	@Autowired
+	NoteRepository noteRepository;
+
+	public NoteStatus createNote(NoteDto notedto, HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

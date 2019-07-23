@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aop-reference-model>
+<aop-project name="Spring Autowiring Xml"/>
+<aop-project name="FundooNotesAPI"/>
+<aop-project name="Spring Project IOC"/>
+<aop-project name="Spring Autowiring Annotations"/>
+<aop-project name="Spring DI Constructor Injection"/>
+<aop-project name="Spring AOP Xml Configuration"/>
+<aop-project name="Spring DI Setter Injection"/>
+<aop-project name="Spring Annotation ArrayList"/>
+</aop-reference-model>

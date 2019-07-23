@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;com.bridgelabz.SpringProject.maven&apos; to &apos;com.bridgelabz.Test&apos;&#x0A;- Original project: &apos;SpringProjects&apos;&#x0A;- Original element: &apos;SpringProjects/src/test/java/com.bridgelabz.SpringProject.maven&apos;&#x0A;- Renamed element: &apos;SpringProjects/src/test/java/com.bridgelabz.Test&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;com.bridgelabz.SpringProject.maven&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src\/test\/java&lt;com.bridgelabz.SpringProject.maven" name="com.bridgelabz.Test" qualified="false" references="true" stamp="1562908145175" textual="false" version="1.0"/>
+</session>

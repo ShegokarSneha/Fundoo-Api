@@ -1,0 +1,30 @@
+package com.bridgelabz.Fundoo.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bridgelabz.Fundoo.dto.RegisterDto;
+import com.bridgelabz.Fundoo.model.RegistrationStatus;
+import com.bridgelabz.Fundoo.services.ServiceImplementation;
+
+@RestController
+public class Controller {
+	
+	@Autowired
+	private ServiceImplementation serviceImplementation;
+	
+	/***************** Registration Controller ******************/
+
+	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
+	public RegistrationStatus registerUser(@RequestBody RegisterDto register, HttpServletRequest request) {
+		System.out.println("In Register User");
+		RegistrationStatus status = serviceImplementation.Registration(register, request);
+		return status;
+	}
+
+}
