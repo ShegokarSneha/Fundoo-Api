@@ -17,57 +17,131 @@ import com.bridgelabz.Fundoo.model.Note;
 import com.bridgelabz.Fundoo.model.User;
 import com.bridgelabz.Fundoo.repository.LoginRegistrationRepository;
 import com.bridgelabz.Fundoo.repository.NoteRepository;
-import com.bridgelabz.Fundoo.result.NoteStatus;
+import com.bridgelabz.Fundoo.result.ResponseCode;
+import com.bridgelabz.Fundoo.result.ResponseStatus;
 
-@Service
+@Service("NoteServiceInterface")
 public class NoteServiceImplementation implements NoteServiceInterface {
 
 	@Autowired
-	NoteRepository noteRepository;
+	private NoteRepository noteRepository;
 	@Autowired
-	AccessToken accessToken;
+	private AccessToken accessToken;
 	@Autowired
-	LoginRegistrationRepository userRepository;
+	private LoginRegistrationRepository userRepository;
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
+	@Autowired
+	private ResponseCode responseCode;
 
-	NoteStatus noteStatus = new NoteStatus();
+	ResponseStatus response;
 
-	public NoteStatus createNote(NoteDto notedto, String token, HttpServletRequest request) {
-		Note note = null;
+	public ResponseStatus createNote(NoteDto notedto, String token, HttpServletRequest request) {
 		String userId = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserId(userId);
-		if (!alreadyuser.isEmpty()) {
-			note = modelMapper.map(notedto, Note.class);
-			note.setUserId(alreadyuser.get().getUserId());
+		if (alreadyuser.isEmpty()) {
+			response = responseCode.getResponse(200, "Note Not Created...!", notedto);
+			System.out.println("Note Not Created...!");
+		} else {
+			Note note = modelMapper.map(notedto, Note.class);
 			note.setCreateddate(LocalDateTime.now());
 			note.setUpdateddate(LocalDateTime.now());
+			note.setUserId(alreadyuser.get().getUserId());
 			note = noteRepository.save(note);
-			List<Note> noteList = alreadyuser.get().getNoteList();
-			if (noteList.isEmpty()) {
+			List<Note> noteList = alreadyuser.get().getNotelist();
+			// System.out.println(noteList);
+			if (!noteList.isEmpty()) {
 				noteList.add(note);
-				alreadyuser.get().setNote(noteList);
+				alreadyuser.get().setNotelist(noteList);
 			} else {
 				new ArrayList<Note>();
 				noteList.add(note);
-				alreadyuser.get().setNote(noteList);
+				alreadyuser.get().setNotelist(noteList);
 			}
 			userRepository.save(alreadyuser.get());
-			noteStatus.setTitle(note.getTitle());
-			noteStatus.setStatus("Note Created Successfully...!");
+			response = responseCode.getResponse(200, "Note Created Successfully...!", notedto);
 			System.out.println("Note Created Successfully...!");
-		} else {
-			noteStatus.setTitle(notedto.getTitle());
-			noteStatus.setStatus("Note Not Created...!");
-			System.out.println("Note Not Created...!");
 		}
-		return noteStatus;
+
+		return response;
 	}
 
-	public NoteStatus updateNote(NoteDto noteDto, String token, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseStatus updateNote(NoteDto notedto, String token, String noteId, HttpServletRequest request) {
+		String userId = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+		if (already.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Credentials", token + noteId);
+			System.out.println("Invalid Credentials");
+		} else {
+			already.get().setTitle(notedto.getTitle());
+			already.get().setDescription(notedto.getDescription());
+			already.get().setUpdateddate(LocalDateTime.now());
+			noteRepository.save(already.get());
+			Optional<User> user = userRepository.findByUserId(userId);
+
+			userRepository.save(user.get());
+			response = responseCode.getResponse(200, "Note Updated Successfully...!", user.get());
+			System.out.println("Note Updated Successfully...!");
+		}
+		return response;
 	}
-	
+
+	public ResponseStatus deleteNote(String token, String noteId, HttpServletRequest request) {
+		String userId = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+		if (already.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Credentials", token + noteId);
+			System.out.println("Invalid Credentials");
+		} else {
+			already.get().setUpdateddate(LocalDateTime.now());
+			noteRepository.delete(already.get());
+			response = responseCode.getResponse(200, "Note Deleted Scessfully", token + noteId);
+			System.out.println("Note Deleted Scessfully");
+		}
+		return response;
+	}
+
+	public ResponseStatus archiveNote(String token, String noteid, HttpServletRequest request) {
+		String userId = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteid);
+		if (already.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Credentials", token + noteid);
+			System.out.println("Invalid Credentials");
+		} else {
+			if (already.get().isArchive() == false) {
+				already.get().setArchive(true);
+				response = responseCode.getResponse(200, "Archived Successfully", already.get());
+				System.out.println("Archived Successfully");
+			} else {
+				// already.get().setArchive(false);
+				response = responseCode.getResponse(300, "Already Archived", already.get());
+				System.out.println("Already Archived");
+			}
+			noteRepository.save(already.get());
+		}
+
+		return response;
+	}
+
+	public ResponseStatus pinnedNote(String token, String noteId, HttpServletRequest request) {
+		String userId = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+		if (already.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Credentials", token + noteId);
+			System.out.println("Invalid Credentials");
+		} else {
+			if (already.get().isPinnned() == false) {
+				already.get().setPinned(true);
+				response = responseCode.getResponse(200, "Pinned Successfully", already.get());
+				System.out.println("Pinned Successfully");
+			} else {
+				response = responseCode.getResponse(300, "Already Pinned", already.get());
+				System.out.println("Already Pinned");
+			}
+			noteRepository.save(already.get());
+		}
+
+		return response;
+	}
 
 }

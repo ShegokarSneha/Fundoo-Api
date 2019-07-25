@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,34 +17,34 @@ import com.bridgelabz.Fundoo.dto.ResetPasswordDto;
 import com.bridgelabz.Fundoo.mailsender.ConfirmationMailSender;
 import com.bridgelabz.Fundoo.model.User;
 import com.bridgelabz.Fundoo.repository.LoginRegistrationRepository;
-import com.bridgelabz.Fundoo.result.LoginRegistrationStatus;
+import com.bridgelabz.Fundoo.result.ResponseCode;
+import com.bridgelabz.Fundoo.result.ResponseStatus;
 
-@Service
+@Service("ServiceInterface")
 public class ServiceImplementation implements ServiceInterface {
 
 	@Autowired
-	private LoginRegistrationRepository repository;
+	private LoginRegistrationRepository registrationRepository;
 	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private BCryptPasswordEncoder passwordEncoder;
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
 	private AccessToken accessToken;
 	@Autowired
-	private ConfirmationMailSender confirmationMailSender;
-
-	LoginRegistrationStatus status = new LoginRegistrationStatus();
+	private ConfirmationMailSender mailSender;
+	@Autowired
+	private ResponseCode responseCode;
+	private ResponseStatus response;
 
 	// ========================= Registering User ============================//
 
-	public LoginRegistrationStatus Registration(RegisterDto register, HttpServletRequest request) {
-		boolean alreadyUser = repository.findByEmail(register.getEmail()).isPresent();
+	public ResponseStatus Registration(RegisterDto register, HttpServletRequest request) {
+		boolean alreadyUser = registrationRepository.findByEmail(register.getEmail()).isPresent();
 		if (alreadyUser) {
 
 			// Already Registered
-
-			status.setEmail(register.getEmail());
-			status.setStatus("User Already Registered...");
+			response = responseCode.getResponse(200, "User Already Exist...", register);
 			System.out.println("\nUser Already Registered");
 
 		} else {
@@ -56,24 +55,23 @@ public class ServiceImplementation implements ServiceInterface {
 
 			// Encoding Password
 
-			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 			// Generating access Token
 
-			repository.save(user);
+			registrationRepository.save(user);
 			user.setToken(accessToken.generateAccessToken(user.getUserId()));
 			user.setDate(LocalDateTime.now());
-			repository.save(user);
+			registrationRepository.save(user);
 
 			// Registration Status
 
-			status.setEmail(user.getEmail());
-			status.setStatus("Registered Successfully...");
+			response = responseCode.getResponse(201, "User Registered Successfully...", register);
 			System.out.println("\nUser Registered Successfully...");
 			registrationActivationMail(user, request);
-
 		}
-		return status;
+		return response;
+
 	}
 
 	// ======================= Sending Activation Mail ===========================//
@@ -87,113 +85,127 @@ public class ServiceImplementation implements ServiceInterface {
 		String subject = "Verification Mail";
 		String text = "Hello " + user.getFirstname() + "\n" + "You have registered Successfully."
 				+ " To activate your account please click on the activation link : " + url;
-		confirmationMailSender.sendEmail(user.getEmail(), subject, text);
+		mailSender.sendEmail(user.getEmail(), subject, text);
 
 	}
 
 	// ======================== Verify User ======================//
 
-	public LoginRegistrationStatus verifyUser(String token, HttpServletRequest request) {
+	public ResponseStatus verifyUser(String token, HttpServletRequest request) {
 		String userId = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = repository.findByUserId(userId);
-		if (!alreadyuser.isEmpty()) {
-			User verifieduser = alreadyuser.get();
-			verifieduser.setVerfied(true);
-			repository.save(verifieduser);
-			status.setEmail(verifieduser.getEmail());
-			status.setStatus("User Verified Successfully.");
-			System.out.println("User Verfied");
+		Optional<User> alreadyuser = registrationRepository.findByUserId(userId);
+		if (alreadyuser.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Token...", token);
 		} else {
-			status.setEmail("Not Present");
-			status.setStatus("User Not Registerted");
-			System.out.println("User Not Registerted");
+			// if (!alreadyuser.isEmpty()) {
+			User verifieduser = alreadyuser.get();
+			if (verifieduser.isVerfied() == false) {
+
+				verifieduser.setVerfied(true);
+				registrationRepository.save(verifieduser);
+				response = responseCode.getResponse(200, "User verified Successfully...", verifieduser);
+				System.out.println("User Verfied");
+			} else {
+				response = responseCode.getResponse(200, "User verified already...", verifieduser);
+				System.out.println("User Verfied already");
+			}
 		}
-		return status;
+		return response;
 	}
 
 	// ===================== Logging User =====================//
 
-	public LoginRegistrationStatus Login(LoginDto login, HttpServletRequest request) {
+	public ResponseStatus Login(LoginDto login, HttpServletRequest request) {
 		String password = login.getPassword();
-		Optional<User> alreadyuser = repository.findByEmail(login.getEmail());
+		Optional<User> alreadyuser = registrationRepository.findByEmail(login.getEmail());
+		if (alreadyuser.isEmpty()) {
+			response = responseCode.getResponse(404, "The email provided does not exist!", login);
+			System.out.println("The email provided does not exist!");
+		} else {
 
-		if (!alreadyuser.isEmpty()) {
 			if (alreadyuser.get().isVerfied() == true) {
-				if (bCryptPasswordEncoder.matches(password, alreadyuser.get().getPassword())) {
+				if (passwordEncoder.matches(password, alreadyuser.get().getPassword())) {
 
 					// LOGIN SUCCESSFULLY
-					status.setEmail(login.getEmail());
-					status.setStatus("User Login Successfully...");
+
+					response = responseCode.getResponse(200, "User Login Successfully...", login);
 					System.out.println("\nUser Login Successfully...");
 				} else {
 
 					// INAVLID PASSWORD
 
-					status.setEmail(login.getEmail());
-					status.setStatus("Invalid Password");
+					response = responseCode.getResponse(204, "Invalid Password", login);
 					System.out.println("\nInvalid Password");
 				}
 			} else {
 				// Email Not verified
-				status.setEmail(login.getEmail());
-				status.setStatus("Email Not verified");
+				response = responseCode.getResponse(204, "Email Not verified", alreadyuser.get());
 				System.out.println("User Not Verified...");
 			}
-		} else {
-
-			// EMAIL NOT EXIST
-
-			status.setEmail(login.getEmail());
-			status.setStatus("The email provided does not exist!");
-			System.out.println("The email provided does not exist!");
-		}
-		return status;
+		} /*
+			 * else {
+			 * 
+			 * // EMAIL NOT EXIST
+			 * 
+			 * response = responseCode.getResponse(404,
+			 * "The email provided does not exist!", login);
+			 * System.out.println("The email provided does not exist!"); }
+			 */
+		return response;
 	}
 
 	// ====================== Forgot Password ======================//
 
-	public LoginRegistrationStatus forgetPassword(ForgetPasswordDto forgetdto, HttpServletRequest request) {
-		Optional<User> alreadyuser = repository.findByEmail(forgetdto.getEmail());
-		if (!alreadyuser.isEmpty()) {
+	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto, HttpServletRequest request) {
+		Optional<User> alreadyuser = registrationRepository.findByEmail(forgetdto.getEmail());
+		if (alreadyuser.isEmpty()) {
+			response = responseCode.getResponse(204, "We didn't find an account with entered E-mail Address.",
+					forgetdto);
+			System.out.println("We didn't find an account with entered E-mail Address.");
+		} else {
+			// if (!alreadyuser.isEmpty()) {
 			String token = alreadyuser.get().getToken();
 			StringBuffer requestUrl = request.getRequestURL();
 			String url = requestUrl.substring(0, requestUrl.lastIndexOf("/")) + "/resetpassword/" + token;
 			String subject = "Reset Password";
 			String text = "Hello " + alreadyuser.get().getFirstname() + "\n" + "You  requested to reset your Password."
 					+ " To reset your password please click on the reset password link : " + url;
-			confirmationMailSender.sendEmail(alreadyuser.get().getEmail(), subject, text);
-			status.setEmail(forgetdto.getEmail());
-			status.setStatus("Request to reset password received. Check your inbox for the reset link.");
-			System.out.println("Request to reset password received. Check your inbox for the reset link.");
-		} else {
-			status.setEmail(forgetdto.getEmail());
-			status.setStatus("We didn't find an account with entered E-mail Address.");
-			System.out.println("We didn't find an account with entered E-mail Address.");
-		}
-		return status;
+			mailSender.sendEmail(alreadyuser.get().getEmail(), subject, text);
+
+			response = responseCode.getResponse(200,
+					"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
+			System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
+		} /*
+			 * else {
+			 * 
+			 * response = responseCode.getResponse(204,
+			 * "We didn't find an account with entered E-mail Address.", forgetdto);
+			 * System.out.println("We didn't find an account with entered E-mail Address.");
+			 * }
+			 */
+		return response;
 	}
 
 	// ======================== Reset Password ===========================//
 
-	public LoginRegistrationStatus resetPassword(String token, ResetPasswordDto setpasswordDto,
-			HttpServletRequest request) {
+	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto, HttpServletRequest request) {
 		String id = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = repository.findByUserId(id);
+		Optional<User> alreadyuser = registrationRepository.findByUserId(id);
 
-		User resetuser = alreadyuser.get();
-		if (!alreadyuser.isEmpty()) {
-			System.out.println(setpasswordDto.getPassword());
-			resetuser.setPassword(bCryptPasswordEncoder.encode(setpasswordDto.getPassword()));
-			repository.save(resetuser);
-			status.setEmail(resetuser.getEmail());
-			status.setStatus("You have successfully reset your password. You may now login.");
-			System.out.println("Password Reset Successfully...!");
+		if (alreadyuser.isEmpty()) {
+			response = responseCode.getResponse(404, "Invalid Token...", token);
 		} else {
-			status.setEmail(resetuser.getEmail());
-			status.setStatus("The Token is invalid or broken....!");
-			System.out.println("Invalid Token");
+			User resetuser = alreadyuser.get();
+			// if (!alreadyuser.isEmpty()) {
+			System.out.println(setpasswordDto.getPassword());
+			resetuser.setPassword(passwordEncoder.encode(setpasswordDto.getPassword()));
+			registrationRepository.save(resetuser);
+
+			response = responseCode.getResponse(200, "You have successfully reset your password. You may now login.",
+					setpasswordDto);
+			System.out.println("Password Reset Successfully...!");
 		}
-		return status;
+		return response;
 	}
 
 }

@@ -1,0 +1,14 @@
+package com.bridgelabz.Fundoo.Utility;
+
+import org.springframework.stereotype.Component;
+
+import com.bridgelabz.Fundoo.result.ResponseStatus;
+
+@Component
+public interface UtilityInterface {
+
+	public ResponseStatus getResponse(int statusCode, String message);
+
+	public ResponseStatus getResponse(int statusCode, String token, String message);
+
+}

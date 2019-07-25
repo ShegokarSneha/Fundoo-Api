@@ -1,0 +1,11 @@
+package com.bridgelabz.Fundoo.Utility;
+
+import com.bridgelabz.Fundoo.result.ResponseStatus;
+
+public interface UtilityInterface {
+
+	public ResponseStatus getResponse(int statusCode, String message);
+
+	public ResponseStatus getResponse(int statusCode, String token, String message);
+
+}

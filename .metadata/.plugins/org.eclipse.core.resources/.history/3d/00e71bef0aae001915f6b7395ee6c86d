@@ -1,0 +1,51 @@
+package com.bridgelabz.Fundoo.result;
+
+public class ResponseStatus {
+
+	private int statusCode;
+	private String token;
+	private String message;
+
+	public ResponseStatus() {
+		
+	}
+
+	public ResponseStatus(int statusCode, String message) {
+		super();
+		this.statusCode = statusCode;
+		this.message = message;
+	}
+	
+	
+	public ResponseStatus(int statusCode, String token, String message) {
+		super();
+		this.statusCode = statusCode;
+		this.token = token;
+		this.message = message;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+}

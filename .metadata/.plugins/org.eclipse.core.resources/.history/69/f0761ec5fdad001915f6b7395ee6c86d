@@ -1,0 +1,8 @@
+package com.bridgelabz.Fundoo.Utility;
+
+public interface UtilityInterface {
+	
+	public  Response getResponse(int statusCode, String statusMessage);
+	public Response getResponse(int statusCode, String token, String statusMessage)
+
+}

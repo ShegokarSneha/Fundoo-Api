@@ -1,0 +1,46 @@
+package com.bridgelabz.Fundoo.result;
+
+import org.springframework.http.HttpStatus;
+
+public class ResponseStatus {
+
+	private int statusCode;
+	private String token;
+	private String message;
+	private HttpStatus httpStatus;
+
+	
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
+	}
+
+	public void setHttpStatus(HttpStatus httpStatus) {
+		this.httpStatus = httpStatus;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+}

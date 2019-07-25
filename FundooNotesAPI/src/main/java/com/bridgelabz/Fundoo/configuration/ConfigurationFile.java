@@ -17,5 +17,4 @@ public class ConfigurationFile {
 		ModelMapper modelMapper = new ModelMapper();
 		return modelMapper;
 	}
-
 }

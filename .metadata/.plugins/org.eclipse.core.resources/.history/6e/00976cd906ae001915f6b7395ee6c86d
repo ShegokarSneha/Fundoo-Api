@@ -1,0 +1,17 @@
+package com.bridgelabz.Fundoo.Utility;
+
+import com.bridgelabz.Fundoo.result.ResponseStatus;
+
+public class UtilityImplementation implements UtilityInterface {
+
+	public ResponseStatus getResponse(int statusCode, String message) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseStatus getResponse(int statusCode, String token, String message) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

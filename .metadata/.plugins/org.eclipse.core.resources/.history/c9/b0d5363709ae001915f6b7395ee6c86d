@@ -1,0 +1,21 @@
+package com.bridgelabz.Fundoo.result;
+
+public class ResponseCode {
+	
+	
+	public ResponseStatus getResponse(int statusCode, String message) {
+		ResponseStatus response = new ResponseStatus();
+		response.setStatusCode(statusCode);
+		response.setMessage(message);
+		return response;
+	}
+
+	public ResponseStatus getResponse(int statusCode, String token, String message) {
+		ResponseStatus response = new ResponseStatus();
+		response.setStatusCode(statusCode);
+		response.setToken(token);
+		response.setMessage(message);
+		return response;
+	}
+
+}

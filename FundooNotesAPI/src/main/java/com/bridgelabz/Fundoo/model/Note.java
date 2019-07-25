@@ -21,7 +21,7 @@ public class Note {
 	private String description;
 	
 	@Field("Pined")
-	private boolean pin;
+	private boolean pinned;
 	
 	@Field("Archive")
 	private boolean archive;
@@ -67,12 +67,12 @@ public class Note {
 		this.description = description;
 	}
 
-	public boolean isPin() {
-		return pin;
+	public boolean isPinnned() {
+		return pinned;
 	}
 
-	public void setPin(boolean pin) {
-		this.pin = pin;
+	public void setPinned(boolean pin) {
+		this.pinned = pin;
 	}
 
 	public boolean isArchive() {

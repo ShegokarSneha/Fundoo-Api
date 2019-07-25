@@ -5,7 +5,34 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2019-07-23T13:18:10Z</updated>
+  <updated>2019-07-24T21:30:30Z</updated>
+  <entry>
+    <title>Simplifying the Spring Cloud Release Train</title>
+    <link rel="alternate" href="https://spring.io/blog/2019/07/24/simplifying-the-spring-cloud-release-train" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Spencer Gibb</name>
+    </author>
+    <id>tag:spring.io,2019-07-24:3749</id>
+    <updated>2019-07-24T21:30:30Z</updated>
+    <content type="html">&lt;p&gt;Spring Cloud continues to prove immensely popular, and over the last few years a number of IaaS providers have provided integration with their technology and joined the release train. This has typically involved getting into the spring-cloud GitHub org and publishing in the org.springframework.cloud Maven groupid. As the number of projects included looks to increase, it is becoming a little unwieldy, and we wanted to take a step back and review the pros and cons that this model provides and propose a better path forward that benefits all projects involved.&lt;/p&gt;
+&lt;p&gt;Perhaps the biggest downside to being part of the release train is that it removes a level of control from the project maintainers. Since the core Spring Cloud team does the releases, maintainers can’t work to the schedule of the technology they are integrating with. Or even if they do manage to get a service refresh out, it won’t be picked up by the release train until the next release train version is released. This model also means that typically the project maintainer doesn’t have direct access to key statistics, such as the Maven download numbers for their project.&lt;/p&gt;
+&lt;p&gt;Also, there appears to be a lot of benefits to being part of the release train, but in fact many of these are benefits available to any project, rather than being anything to do with being on the train or in the spring-cloud GitHub org:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The Spring Cloud team regularly engages with external projects to help review them and provide constructive feedback on how best to integrate with Spring Cloud. Inclusion in the release train doesn’t make this more or less likely to happen. (Please reach out if you want feedback.)&lt;/li&gt;
+  &lt;li&gt;There is a perception that it makes it easier to get that elusive checkbox on &lt;a href="https://start.spring.io"&gt;start.spring.io&lt;/a&gt;. This is not true. There are &lt;a href="https://github.com/spring-io/initializr/wiki/Guidelines-for-3rd-Party-Starters"&gt;guidelines&lt;/a&gt; about how to ensure a project is developed such that it is suitable for start.spring.io, but decisions about inclusion are based on more than following a naming scheme. Are we finding that the community is embracing the technology the project is integrating with? Has the project built a vibrant and sustainable community, ensuring a long life and healthy codebase? Are there sufficient docs, guides, etc. showing how to use the project? Nothing in the guidelines necessitates inclusion in a Spring GitHub organization.&lt;/li&gt;
+  &lt;li&gt;The Spring team regularly produces content involving third-party projects, highlighting key releases or enhancements. There is no need to be part of the release train for this to happen.&lt;br/&gt;The &lt;a href="https://spring.io"&gt;https://spring.io&lt;/a&gt; site obviously includes content that covers the main Spring Cloud projects, but it also includes content that covers some third-party projects. This might be a guide showing how to use the technology or an entry on one of the existing project pages. See &lt;a href="https://spring.io/projects/spring-cloud"&gt;https://spring.io/projects/spring-cloud&lt;/a&gt;, which refers to many projects &amp;ndash; some of which are on the train and some of which are not.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For these reasons, the Spring Cloud team has decided to move to a model that slims down the release train, allowing us to address the downsides whilst keeping all the perceived benefits. The proposal is that IaaS providers will host and maintain their code in their own GitHub organizations. This applies to all of the existing integrations currently on the release train. Spring Cloud Azure have never joined the train, and the Spring Cloud Alibaba team are already embracing this new model as they graduate from the incubator organization.&lt;/p&gt;&lt;h2&gt;&lt;a href="#what-will-this-mean-in-practical-terms" class="anchor" name="what-will-this-mean-in-practical-terms"&gt;&lt;/a&gt;What will this mean in practical terms?&lt;/h2&gt;
+&lt;p&gt;The removal of some of these projects from the Spring Cloud GitHub organization and the release train is not a statement about a change in active development or support policy. The same teams will be working on these, keeping up with Spring Cloud releases. If anything, this change may bring clarity to the support model: if the projects are hosted in the IaaS provider’s GitHub organization, they are obviously providing the support.&lt;/p&gt;
+&lt;p&gt;The new model does mean that there will likely be a change in the group-id, and possibly in the artifact-id. It is also likely that the package names will be updated to reflect these changes. Developers will also need to explicitly include these dependencies in their projects, rather than inheriting them via managed versions through the Spring Cloud BOM.&lt;/p&gt;
+&lt;p&gt;The Spring Boot team have &lt;a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-auto-configuration.html#boot-features-custom-starter-naming"&gt;guidelines&lt;/a&gt; for appropriate naming of modules (autoconfiguration and starters). These are not strictly enforced for Spring Cloud, but adherence to the guidelines can mean that anything built relying on the scheme will ‘just work’ (for example, content assist tooling in an IDE).&lt;/p&gt;
+&lt;p&gt;Following this model, the Alibaba team are graduating from the spring-cloud-incubator into their own GitHub org at &lt;a href="https://github.com/alibaba/spring-cloud-alibaba"&gt;https://github.com/alibaba/spring-cloud-alibaba&lt;/a&gt;, where we continue to work with them as they head this week for an important release that supports Spring Cloud Greenwich.SR2 and Finchley.SR4. This release will include Sentinel support for Spring Cloud Gateway and enable Nacos service discovery and Spring-Cloud-Config to be used together. Look out for that!&lt;/p&gt;
+&lt;p&gt;You can expect to see the other providers move during the release of a future major Spring Cloud train, as a major release is the right time to make a serious change such as this.&lt;/p&gt;
+&lt;p&gt;Note that this is purely describing the situation and plan for the main Spring Cloud train at this time; it isn’t impacting other projects (for example, Spring Cloud Stream binders).&lt;/p&gt;
+&lt;p&gt;We hope that the reasoning above explains what we are trying to achieve with this strategy. As always, we are receptive to feedback — please let us know what you think. Giving project owners full flexibility to build and release software that better aligns with their culture, whilst continuing to offer all of the benefits of working closely with us on code reviews and project promotion, should benefit everyone.&lt;/p&gt;
+&lt;!-- rendered by Sagan Renderer Service --&gt;</content>
+  </entry>
   <entry>
     <title>This Week in Spring - July 23, 2019</title>
     <link rel="alternate" href="https://spring.io/blog/2019/07/23/this-week-in-spring-july-23-2019" />
@@ -990,63 +1017,6 @@ dependencies {&#xD;
   &lt;li&gt;&lt;a href="https://spring.io/blog/2019/06/12/spring-tips-spring-s-support-for-kotlin-coroutines"&gt;Spring&amp;rsquo;s Support for Kotlin Coroutines&lt;/a&gt; 6/12/2019&lt;/li&gt;
   &lt;li&gt;&lt;a href="https://spring.io/blog/2019/06/19/spring-tips-distributed-locks-with-spring-integration"&gt;Distributed Locks with Spring Integration&lt;/a&gt; 6/19/2019&lt;/li&gt;
 &lt;/ul&gt;
-&lt;!-- rendered by Sagan Renderer Service --&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Cloud Data Flow 2.1.2 GA and 2.0.3 GA Released</title>
-    <link rel="alternate" href="https://spring.io/blog/2019/06/26/spring-cloud-data-flow-2-1-2-ga-and-2-0-3-ga-released" />
-    <category term="engineering" label="Engineering" />
-    <author>
-      <name>Ilayaperumal Gopinathan</name>
-    </author>
-    <id>tag:spring.io,2019-06-26:3729</id>
-    <updated>2019-06-26T15:21:33Z</updated>
-    <content type="html">&lt;div class="paragraph"&gt;
-&lt;p&gt;The &lt;a href="https://cloud.spring.io/spring-cloud-dataflow/"&gt;Spring Cloud Data Flow&lt;/a&gt; team is pleased to announce the release of 2.1.2 GA and 2.0.3 GA of Data Flow.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;This is a minor release with mostly bug fixes and documentation enhancements.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Here are the highlights of the releases:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="ulist"&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Bug fixes on Spring Cloud Data Flow, Spring Cloud Data Flow UI and Spring Cloud Scheduler for CloudFoundry&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Java Stream DSL now supports stream update operation&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Spring Cloud Deployer now uses Maven Resolver instead of Aether for resolving the Maven artifacts&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Along with the releases, we also have the Spring Cloud Data Flow &lt;a href="https://dataflow.spring.io/"&gt;website&lt;/a&gt; enhanced with&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="ulist"&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Responsive Design&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;More receipes and use cases discussion&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Documentation fixes&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class="sect1"&gt;
-&lt;h2 id="stay-in-touch"&gt;&lt;a class="anchor" href="#stay-in-touch"&gt;&lt;/a&gt;Stay in touch&amp;#8230;&amp;#8203;&lt;/h2&gt;
-&lt;div class="sectionbody"&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;As always, we welcome feedback and contributions, so please reach out to us on &lt;a href="https://stackoverflow.com/questions/tagged/spring-cloud-dataflow"&gt;Stackoverflow&lt;/a&gt; or &lt;a href="https://github.com/spring-cloud/spring-cloud-dataflow/issues"&gt;GitHub&lt;/a&gt; or via &lt;a href="https://gitter.im/spring-cloud/spring-cloud-dataflow"&gt;Gitter&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
 &lt;!-- rendered by Sagan Renderer Service --&gt;</content>
   </entry>
 </feed>

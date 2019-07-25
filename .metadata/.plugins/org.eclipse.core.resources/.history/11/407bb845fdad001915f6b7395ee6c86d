@@ -1,0 +1,7 @@
+package com.bridgelabz.Fundoo.Utility;
+
+public interface UtilityInterface {
+	
+	
+
+}
