@@ -15,6 +15,7 @@ import com.bridgelabz.Fundoo.dto.ForgetPasswordDto;
 import com.bridgelabz.Fundoo.dto.LoginDto;
 import com.bridgelabz.Fundoo.dto.RegisterDto;
 import com.bridgelabz.Fundoo.dto.ResetPasswordDto;
+import com.bridgelabz.Fundoo.mailsender.MailProducer;
 import com.bridgelabz.Fundoo.result.ResponseStatus;
 import com.bridgelabz.Fundoo.services.ServiceInterface;
 
@@ -25,6 +26,9 @@ public class UserController {
 
 	@Autowired
 	private ServiceInterface iService;
+	
+	@Autowired
+	MailProducer mailProducer;
 
 	/***************** Registration Controller ******************/
 
@@ -73,5 +77,11 @@ public class UserController {
 		ResponseStatus response = iService.verifyUser(token, request);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
+	
+/*	@RequestMapping(value = "/send", method = RequestMethod.GET)
+	public String sendMsg(@RequestParam("msg") String msg) {
+		mailProducer.generateMsg(msg);
+		return "Done";
+	}*/
 
 }

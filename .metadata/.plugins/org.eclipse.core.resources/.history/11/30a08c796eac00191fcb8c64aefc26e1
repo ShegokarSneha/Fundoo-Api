@@ -1,5 +1,0 @@
-package com.bridgelabz.Fundoo.dto;
-
-public class ResetPasswordDto {
-
-}

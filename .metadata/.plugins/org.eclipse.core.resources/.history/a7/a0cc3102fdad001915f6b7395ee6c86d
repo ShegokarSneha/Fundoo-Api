@@ -1,5 +1,0 @@
-package com.bridgelabz.Fundoo.Utility;
-
-public class UtilityImplementation implements UtilityInterface {
-
-}

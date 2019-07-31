@@ -1,6 +1,0 @@
-package com.bridgelabz.Fundoo.mailsender;
-
-public class ConfirmationMailSender {
-	private JavaMailSender java
-
-}

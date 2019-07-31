@@ -134,7 +134,7 @@ public class ServiceImplementation implements ServiceInterface {
 
 					// INAVLID PASSWORD
 
-					response = responseCode.getResponse(204, "Invalid Password", login);
+					response = responseCode.getResponse(401, "Invalid Password", login);
 					System.out.println("\nInvalid Password");
 				}
 			} else {
@@ -175,14 +175,7 @@ public class ServiceImplementation implements ServiceInterface {
 			response = responseCode.getResponse(200,
 					"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
 			System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
-		} /*
-			 * else {
-			 * 
-			 * response = responseCode.getResponse(204,
-			 * "We didn't find an account with entered E-mail Address.", forgetdto);
-			 * System.out.println("We didn't find an account with entered E-mail Address.");
-			 * }
-			 */
+		}
 		return response;
 	}
 
