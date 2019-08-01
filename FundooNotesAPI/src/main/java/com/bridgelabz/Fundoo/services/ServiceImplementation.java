@@ -1,9 +1,9 @@
 package com.bridgelabz.Fundoo.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.Fundoo.accesstoken.AccessToken;
 import com.bridgelabz.Fundoo.dto.ForgetPasswordDto;
 import com.bridgelabz.Fundoo.dto.LoginDto;
+import com.bridgelabz.Fundoo.dto.MailDto;
 import com.bridgelabz.Fundoo.dto.RegisterDto;
 import com.bridgelabz.Fundoo.dto.ResetPasswordDto;
-import com.bridgelabz.Fundoo.mailsender.ConfirmationMailSender;
+import com.bridgelabz.Fundoo.exceptionhandling.UserNotFoundException;
 import com.bridgelabz.Fundoo.model.User;
+import com.bridgelabz.Fundoo.rabbitmq.QueueProducer;
 import com.bridgelabz.Fundoo.repository.LoginRegistrationRepository;
 import com.bridgelabz.Fundoo.result.ResponseCode;
 import com.bridgelabz.Fundoo.result.ResponseStatus;
@@ -32,18 +34,21 @@ public class ServiceImplementation implements ServiceInterface {
 	@Autowired
 	private AccessToken accessToken;
 	@Autowired
-	private ConfirmationMailSender mailSender;
-	@Autowired
 	private ResponseCode responseCode;
+	@Autowired
+	private QueueProducer queueProducer;
+
 	private ResponseStatus response;
+
+	private MailDto maildto = new MailDto();
 
 	// ========================= Registering User ============================//
 
-	public ResponseStatus Registration(RegisterDto register, HttpServletRequest request) {
+	public ResponseStatus Registration(RegisterDto register) {
 		boolean alreadyUser = registrationRepository.findByEmail(register.getEmail()).isPresent();
 		if (alreadyUser) {
 
-			// Already Registered
+			// throw new UserAlreadyExistsException();
 			response = responseCode.getResponse(200, "User Already Exist...", register);
 			System.out.println("\nUser Already Registered");
 
@@ -66,38 +71,37 @@ public class ServiceImplementation implements ServiceInterface {
 
 			// Registration Status
 
+			String url = "http://localhost:8080/verify/" + user.getToken();
+
+			String text = "Hello " + user.getFirstname() + "\n" + "You have registered Successfully."
+					+ " To activate your account please click on the activation link : " + url;
+
+			maildto.setEmail(user.getEmail());
+			maildto.setSubject("Verification Mail");
+			maildto.setBody(text);
+
+			try {
+				queueProducer.produce(maildto);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			response = responseCode.getResponse(201, "User Registered Successfully...", register);
 			System.out.println("\nUser Registered Successfully...");
-			registrationActivationMail(user, request);
 		}
 		return response;
 
 	}
 
-	// ======================= Sending Activation Mail ===========================//
-
-	private void registrationActivationMail(User user, HttpServletRequest request) {
-		String token = user.getToken();
-		StringBuffer requestUrl = request.getRequestURL();
-		// System.out.println(requestUrl);
-		String url = requestUrl.substring(0, requestUrl.lastIndexOf("/")) + "/verify/" + token;
-		// System.out.println(url);
-		String subject = "Verification Mail";
-		String text = "Hello " + user.getFirstname() + "\n" + "You have registered Successfully."
-				+ " To activate your account please click on the activation link : " + url;
-		mailSender.sendEmail(user.getEmail(), subject, text);
-
-	}
-
 	// ======================== Verify User ======================//
 
-	public ResponseStatus verifyUser(String token, HttpServletRequest request) {
+	public ResponseStatus verifyUser(String token) {
 		String userId = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = registrationRepository.findByUserId(userId);
 		if (alreadyuser.isEmpty()) {
-			response = responseCode.getResponse(404, "Invalid Token...", token);
+			System.out.println("User Not Found");
+			throw new UserNotFoundException();
 		} else {
-			// if (!alreadyuser.isEmpty()) {
 			User verifieduser = alreadyuser.get();
 			if (verifieduser.isVerfied() == false) {
 
@@ -115,12 +119,13 @@ public class ServiceImplementation implements ServiceInterface {
 
 	// ===================== Logging User =====================//
 
-	public ResponseStatus Login(LoginDto login, HttpServletRequest request) {
+	public ResponseStatus Login(LoginDto login) {
 		String password = login.getPassword();
 		Optional<User> alreadyuser = registrationRepository.findByEmail(login.getEmail());
 		if (alreadyuser.isEmpty()) {
-			response = responseCode.getResponse(404, "The email provided does not exist!", login);
-			System.out.println("The email provided does not exist!");
+			System.out.println("User Not Found");
+			throw new UserNotFoundException();
+
 		} else {
 
 			if (alreadyuser.get().isVerfied() == true) {
@@ -142,36 +147,35 @@ public class ServiceImplementation implements ServiceInterface {
 				response = responseCode.getResponse(204, "Email Not verified", alreadyuser.get());
 				System.out.println("User Not Verified...");
 			}
-		} /*
-			 * else {
-			 * 
-			 * // EMAIL NOT EXIST
-			 * 
-			 * response = responseCode.getResponse(404,
-			 * "The email provided does not exist!", login);
-			 * System.out.println("The email provided does not exist!"); }
-			 */
+		}
 		return response;
 	}
 
 	// ====================== Forgot Password ======================//
 
-	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto, HttpServletRequest request) {
+	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto) {
 		Optional<User> alreadyuser = registrationRepository.findByEmail(forgetdto.getEmail());
 		if (alreadyuser.isEmpty()) {
-			response = responseCode.getResponse(204, "We didn't find an account with entered E-mail Address.",
-					forgetdto);
-			System.out.println("We didn't find an account with entered E-mail Address.");
+			System.out.println("User Not Found");
+			throw new UserNotFoundException();
+
 		} else {
-			// if (!alreadyuser.isEmpty()) {
-			String token = alreadyuser.get().getToken();
-			StringBuffer requestUrl = request.getRequestURL();
-			String url = requestUrl.substring(0, requestUrl.lastIndexOf("/")) + "/resetpassword/" + token;
-			String subject = "Reset Password";
+
+			String url = "http://localhost:8080/resetpassword/" + alreadyuser.get().getToken();
+
 			String text = "Hello " + alreadyuser.get().getFirstname() + "\n" + "You  requested to reset your Password."
 					+ " To reset your password please click on the reset password link : " + url;
-			mailSender.sendEmail(alreadyuser.get().getEmail(), subject, text);
 
+			maildto.setEmail(alreadyuser.get().getEmail());
+			maildto.setSubject("Reset Password Link");
+			maildto.setBody(text);
+
+			try {
+				queueProducer.produce(maildto);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			response = responseCode.getResponse(200,
 					"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
 			System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
@@ -181,15 +185,15 @@ public class ServiceImplementation implements ServiceInterface {
 
 	// ======================== Reset Password ===========================//
 
-	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto, HttpServletRequest request) {
+	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto) {
 		String id = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = registrationRepository.findByUserId(id);
 
 		if (alreadyuser.isEmpty()) {
-			response = responseCode.getResponse(404, "Invalid Token...", token);
+			System.out.println("User Not Found");
+			throw new UserNotFoundException();
 		} else {
 			User resetuser = alreadyuser.get();
-			// if (!alreadyuser.isEmpty()) {
 			System.out.println(setpasswordDto.getPassword());
 			resetuser.setPassword(passwordEncoder.encode(setpasswordDto.getPassword()));
 			registrationRepository.save(resetuser);
@@ -201,4 +205,11 @@ public class ServiceImplementation implements ServiceInterface {
 		return response;
 	}
 
+	public ResponseStatus getAllUsers() {
+		List<User> userlist = registrationRepository.findAll();
+		response = responseCode.getResponse(200, "User List", userlist);
+		return response;
+	}
+
+	
 }

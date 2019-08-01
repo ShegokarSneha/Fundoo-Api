@@ -124,4 +124,11 @@ public class User {
 		this.notes = notelist;
 	}
 
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
+				+ ", username=" + username + ", email=" + email + ", password=" + password + ", date=" + date
+				+ ", isVerfied=" + isVerfied + ", notes=" + notes + "]";
+	}
+
 }

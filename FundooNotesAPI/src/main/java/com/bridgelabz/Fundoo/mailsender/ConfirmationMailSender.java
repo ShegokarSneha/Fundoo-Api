@@ -12,13 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import com.bridgelabz.Fundoo.dto.MailDto;
+
 @Component
 public class ConfirmationMailSender {
 
 	@Autowired
 	private JavaMailSender javaMailSender;
 
-	public void sendEmail(String email, String subject, String body) {
+	public void sendEmail(MailDto maildto) {
 
 		Properties properties = System.getProperties();
 
@@ -30,13 +32,13 @@ public class ConfirmationMailSender {
 			MimeMessage message = new MimeMessage(session);
 
 			// Set To: header field of the header.
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(maildto.getEmail()));
 
 			// Set Subject: header field
-			message.setSubject(subject);
+			message.setSubject(maildto.getSubject());
 
 			// Now set the actual message
-			message.setText(body);
+			message.setText(maildto.getBody());
 
 			// Send message
 			javaMailSender.send(message);
