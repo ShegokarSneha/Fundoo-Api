@@ -3,11 +3,12 @@ package com.bridgelabz.Fundoo.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.Fundoo.dto.NoteDto;
@@ -22,7 +23,7 @@ public class NoteController {
 	private NoteServiceInterface iNoteServiceInterface;
 
 	/********************* Create Note **********************/
-	@RequestMapping(value = "/create/{token}", method = RequestMethod.POST)
+	@PostMapping(value = "/create/{token}")
 	public ResponseStatus createNote(@RequestBody NoteDto notedto, @PathVariable("token") String token) {
 		System.out.println("In Create Note");
 		ResponseStatus response = iNoteServiceInterface.createNote(notedto, token);
@@ -30,7 +31,7 @@ public class NoteController {
 	}
 
 	/******************** Update Note ***********************/
-	@RequestMapping(value = "update/{token}/{noteId}", method = RequestMethod.POST)
+	@PostMapping(value = "update/{token}/{noteId}")
 	public ResponseStatus updateNote(@RequestBody NoteDto noteDto, @PathVariable("token") String token,
 			@PathVariable("noteId") String noteId) {
 		System.out.println("In Update Note");
@@ -39,7 +40,7 @@ public class NoteController {
 	}
 
 	/******************** Delete Note ***********************/
-	@RequestMapping(value = "delete/{token}/{noteId}", method = RequestMethod.GET)
+	@DeleteMapping(value = "delete/{token}/{noteId}")
 	public ResponseStatus deleteNote(@PathVariable("token") String token, @PathVariable("noteId") String noteId) {
 		System.out.println("In Delete Note");
 		ResponseStatus response = iNoteServiceInterface.deleteNote(token, noteId);
@@ -47,7 +48,7 @@ public class NoteController {
 	}
 
 	/******************** Archive Note ***********************/
-	@RequestMapping(value = "archive/{token}/{noteId}", method = RequestMethod.GET)
+	@GetMapping(value = "archive/{token}/{noteId}")
 	public ResponseStatus archiveNote(@PathVariable("token") String token, @PathVariable("noteId") String noteId,
 			HttpServletRequest request) {
 		System.out.println("In Archive Note");
@@ -56,7 +57,7 @@ public class NoteController {
 	}
 
 	/******************** Pinned Note ***********************/
-	@RequestMapping(value = "pinned/{token}/{noteId}", method = RequestMethod.GET)
+	@GetMapping(value = "pinned/{token}/{noteId}")
 	public ResponseStatus pinnedNote(@PathVariable("token") String token, @PathVariable("noteId") String noteId) {
 		System.out.println("In Pinned Note");
 		ResponseStatus response = iNoteServiceInterface.pinnedNote(token, noteId);
@@ -64,7 +65,7 @@ public class NoteController {
 	}
 
 	/******************** Trash Note ***********************/
-	@RequestMapping(value = "trash/{token}/{noteId}", method = RequestMethod.GET)
+	@GetMapping(value = "trash/{token}/{noteId}")
 	public ResponseStatus trashNote(@PathVariable("token") String token, @PathVariable("noteId") String noteId) {
 		System.out.println("In Trash Note");
 		ResponseStatus response = iNoteServiceInterface.trashNote(token, noteId);
@@ -74,7 +75,7 @@ public class NoteController {
 	/******************* Note List ****************************/
 	@GetMapping(value = "/getall/{token}")
 	public ResponseStatus getAll(@PathVariable("token")String token) {
-		System.out.println("In Get All");
+		System.out.println("In Get All Notes");
 		ResponseStatus response = iNoteServiceInterface.getAll(token);
 		return response;
 	}

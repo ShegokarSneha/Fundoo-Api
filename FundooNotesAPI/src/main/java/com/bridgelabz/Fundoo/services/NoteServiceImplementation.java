@@ -14,8 +14,8 @@ import com.bridgelabz.Fundoo.dto.NoteDto;
 import com.bridgelabz.Fundoo.exceptionhandling.UserNotFoundException;
 import com.bridgelabz.Fundoo.model.Note;
 import com.bridgelabz.Fundoo.model.User;
-import com.bridgelabz.Fundoo.repository.LoginRegistrationRepository;
 import com.bridgelabz.Fundoo.repository.NoteRepository;
+import com.bridgelabz.Fundoo.repository.UserRepository;
 import com.bridgelabz.Fundoo.result.ResponseCode;
 import com.bridgelabz.Fundoo.result.ResponseStatus;
 
@@ -27,7 +27,7 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	@Autowired
 	private AccessToken accessToken;
 	@Autowired
-	private LoginRegistrationRepository userRepository;
+	private UserRepository userRepository;
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
@@ -41,8 +41,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		if (alreadyuser.isEmpty()) {
 			System.out.println("Note Not Created...!");
 			throw new UserNotFoundException();
-	//		response = responseCode.getResponse(200, "Note Not Created...!", notedto);
-			
+			// response = responseCode.getResponse(200, "Note Not Created...!", notedto);
+
 		} else {
 			Note note = modelMapper.map(notedto, Note.class);
 			note.setCreateddate(LocalDateTime.now());
@@ -72,8 +72,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-	//		response = responseCode.getResponse(401, "Invalid Credentials", token + noteId);
-	//		System.out.println("Invalid Credentials");
+			// response = responseCode.getResponse(401, "Invalid Credentials", token +
+			// noteId);
+			// System.out.println("Invalid Credentials");
 		} else {
 			already.get().setTitle(notedto.getTitle());
 			already.get().setDescription(notedto.getDescription());
@@ -93,10 +94,11 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-/*			response = responseCode.getResponse(401, "Invalid Credentials", token + noteId);
-			System.out.println("Invalid Credentials");*/
+			/*
+			 * response = responseCode.getResponse(401, "Invalid Credentials", token +
+			 * noteId); System.out.println("Invalid Credentials");
+			 */
 		} else {
-			already.get().setUpdateddate(LocalDateTime.now());
 			noteRepository.delete(already.get());
 			response = responseCode.getResponse(200, "Note Deleted Scessfully", token + noteId);
 			System.out.println("Note Deleted Scessfully");
@@ -109,7 +111,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-	//		response = responseCode.getResponse(401, "Invalid Credentials", token + noteid);
+			// response = responseCode.getResponse(401, "Invalid Credentials", token +
+			// noteid);
 //			System.out.println("Invalid Credentials");
 		} else {
 			if (already.get().isArchive() == false) {
@@ -132,10 +135,11 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-	//		response = responseCode.getResponse(401, "Invalid Credentials", token + noteId);
-	//		System.out.println("Invalid Credentials");
+			// response = responseCode.getResponse(401, "Invalid Credentials", token +
+			// noteId);
+			// System.out.println("Invalid Credentials");
 		} else {
-			if (already.get().isPinnned() == false) {
+			if (already.get().isPinned() == false) {
 				already.get().setPinned(true);
 				response = responseCode.getResponse(200, "Pinned Successfully", already.get());
 				System.out.println("Pinned Successfully");
@@ -155,8 +159,10 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-	/*		response = responseCode.getResponse(401, "Invalid Credentials", token + noteId);
-			System.out.println("Invalid Credentials");*/
+			/*
+			 * response = responseCode.getResponse(401, "Invalid Credentials", token +
+			 * noteId); System.out.println("Invalid Credentials");
+			 */
 		} else {
 			if (already.get().isTrash() == false) {
 				already.get().setTrash(true);
@@ -171,15 +177,14 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		}
 		return response;
 	}
-	
+
 	public ResponseStatus getAll(String token) {
 		String userId = accessToken.verifyAccessToken(token);
 		Optional<User> already = userRepository.findByUserId(userId);
-		if(already.isEmpty()) {
+		if (already.isEmpty()) {
 			throw new UserNotFoundException();
 //			response = responseCode.getResponse(401, "Invalid Credentials", token);
-		}
-		else {
+		} else {
 			response = responseCode.getResponse(200, "List Of Note", already.get().getNotelist());
 			System.out.println("List Get Successfully");
 		}

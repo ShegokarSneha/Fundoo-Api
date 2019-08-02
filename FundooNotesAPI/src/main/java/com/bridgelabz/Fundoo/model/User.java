@@ -38,11 +38,14 @@ public class User {
 
 	@Field("Verified")
 	private boolean isVerfied;
-	
-	
+
 	@DBRef
 	@Field("Notes_List")
-	private List<Note> notes = new ArrayList<Note>();
+	private List<Note> notelist = new ArrayList<Note>();
+
+	@DBRef
+	@Field("Label_List")
+	private List<Label> labellist = new ArrayList<Label>();
 
 	public String getUserId() {
 		return userId;
@@ -117,18 +120,26 @@ public class User {
 	}
 
 	public List<Note> getNotelist() {
-		return notes;
+		return notelist;
 	}
 
 	public void setNotelist(List<Note> notelist) {
-		this.notes = notelist;
+		this.notelist = notelist;
+	}
+
+	public List<Label> getLabellist() {
+		return labellist;
+	}
+
+	public void setLabellist(List<Label> labellist) {
+		this.labellist = labellist;
 	}
 
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
 				+ ", username=" + username + ", email=" + email + ", password=" + password + ", date=" + date
-				+ ", isVerfied=" + isVerfied + ", notes=" + notes + "]";
+				+ ", isVerfied=" + isVerfied + ", notelist=" + notelist + ", labellist=" + labellist + "]";
 	}
 
 }

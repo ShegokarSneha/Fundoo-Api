@@ -1,6 +1,7 @@
 package com.bridgelabz.Fundoo.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,6 +35,9 @@ public class Note {
 	
 	@Field("Updated_Date")
 	private LocalDateTime updateddate;
+	
+	@Field("Label_List")
+	private List<Label> labellist;
 
 	public String getNoteId() {
 		return noteId;
@@ -67,7 +71,7 @@ public class Note {
 		this.description = description;
 	}
 
-	public boolean isPinnned() {
+	public boolean isPinned() {
 		return pinned;
 	}
 
@@ -106,5 +110,22 @@ public class Note {
 	public void setUpdateddate(LocalDateTime updateddate) {
 		this.updateddate = updateddate;
 	}
+	
+	public List<Label> getLabellist() {
+		return labellist;
+	}
+
+	public void setLabellist(List<Label> labellist) {
+		this.labellist = labellist;
+	}
+
+	@Override
+	public String toString() {
+		return "Note [noteId=" + noteId + ", userId=" + userId + ", title=" + title + ", description=" + description
+				+ ", pinned=" + pinned + ", archive=" + archive + ", trash=" + trash + ", createddate=" + createddate
+				+ ", updateddate=" + updateddate + ", labellist=" + labellist + "]";
+	}
+	
+	
 
 }
