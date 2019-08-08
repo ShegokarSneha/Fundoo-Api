@@ -16,11 +16,11 @@ public class AccessToken {
 
 	private String secret = "name";
 
-	public String generateAccessToken(String userId) {
+	public String generateAccessToken(String userid) {
 
 		String token = null;
 		try {
-			token = JWT.create().withClaim("userId", userId).sign(Algorithm.HMAC256(secret));
+			token = JWT.create().withClaim("userid", userid).sign(Algorithm.HMAC256(secret));
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,20 +31,20 @@ public class AccessToken {
 	public String verifyAccessToken(String token) {
 
 		Verification verification;
-		String userId = null;
+		String userid = null;
 		try {
 			verification = JWT.require(Algorithm.HMAC256(secret));
 			JWTVerifier jwtVerifier = verification.build();
 			DecodedJWT decodedJWT = jwtVerifier.verify(token);
 			decodedJWT.getAlgorithm();
-			Claim claim = decodedJWT.getClaim("userId");
-			userId = claim.asString();
+			Claim claim = decodedJWT.getClaim("userid");
+			userid = claim.asString();
 
 		} catch (SignatureVerificationException e) {
 			e.printStackTrace();
 		} catch (JWTDecodeException e) {
 			System.out.println("Invalid Token");
 		}
-		return userId;
+		return userid;
 	}
 }

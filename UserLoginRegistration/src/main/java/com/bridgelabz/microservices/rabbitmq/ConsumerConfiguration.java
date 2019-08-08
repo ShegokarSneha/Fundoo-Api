@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfigurationConsumer {
+public class ConsumerConfiguration {
 	
 	private static final String LISTENER_METHOD = "receiveMessage";
 	

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.bridgelabz.microservices.dto.MailDto;
 
 @Component
-public class MailSender {
+public class MailDataSender {
 
 	@Autowired
 	private JavaMailSender javaMailSender;

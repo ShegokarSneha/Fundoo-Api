@@ -2,6 +2,7 @@ package com.bridgelabz.Fundoo.services;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,22 +36,22 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 
 	ResponseStatus response;
 
+	@Override
 	public ResponseStatus createNote(NoteDto notedto, String token) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = userRepository.findByUserId(userId);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 		if (alreadyuser.isEmpty()) {
 			System.out.println("Note Not Created...!");
 			throw new UserNotFoundException();
-			// response = responseCode.getResponse(200, "Note Not Created...!", notedto);
 
 		} else {
 			Note note = modelMapper.map(notedto, Note.class);
 			note.setCreateddate(LocalDateTime.now());
 			note.setUpdateddate(LocalDateTime.now());
-			note.setUserId(alreadyuser.get().getUserId());
+			note.setUserId(alreadyuser.get().getUserid());
 			note = noteRepository.save(note);
 			List<Note> noteList = alreadyuser.get().getNotelist();
-			// System.out.println(noteList);
+
 			if (!noteList.isEmpty()) {
 				noteList.add(note);
 				alreadyuser.get().setNotelist(noteList);
@@ -67,20 +68,18 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
-	public ResponseStatus updateNote(NoteDto notedto, String token, String noteId) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+	@Override
+	public ResponseStatus updateNote(NoteDto notedto, String token, String noteid) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-			// response = responseCode.getResponse(401, "Invalid Credentials", token +
-			// noteId);
-			// System.out.println("Invalid Credentials");
 		} else {
 			already.get().setTitle(notedto.getTitle());
 			already.get().setDescription(notedto.getDescription());
 			already.get().setUpdateddate(LocalDateTime.now());
 			noteRepository.save(already.get());
-			Optional<User> user = userRepository.findByUserId(userId);
+			Optional<User> user = userRepository.findByUserid(userid);
 
 			userRepository.save(user.get());
 			response = responseCode.getResponse(200, "Note Updated Successfully...!", user.get());
@@ -89,31 +88,27 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
-	public ResponseStatus deleteNote(String token, String noteId) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+	@Override
+	public ResponseStatus deleteNote(String token, String noteid) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-			/*
-			 * response = responseCode.getResponse(401, "Invalid Credentials", token +
-			 * noteId); System.out.println("Invalid Credentials");
-			 */
+
 		} else {
 			noteRepository.delete(already.get());
-			response = responseCode.getResponse(200, "Note Deleted Scessfully", token + noteId);
+			response = responseCode.getResponse(200, "Note Deleted Scessfully", token + noteid);
 			System.out.println("Note Deleted Scessfully");
 		}
 		return response;
 	}
 
+	@Override
 	public ResponseStatus archiveNote(String token, String noteid) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteid);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-			// response = responseCode.getResponse(401, "Invalid Credentials", token +
-			// noteid);
-//			System.out.println("Invalid Credentials");
 		} else {
 			if (already.get().isArchive() == false) {
 				already.get().setArchive(true);
@@ -130,14 +125,12 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
-	public ResponseStatus pinnedNote(String token, String noteId) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+	@Override
+	public ResponseStatus pinnedNote(String token, String noteid) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-			// response = responseCode.getResponse(401, "Invalid Credentials", token +
-			// noteId);
-			// System.out.println("Invalid Credentials");
 		} else {
 			if (already.get().isPinned() == false) {
 				already.get().setPinned(true);
@@ -154,15 +147,13 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
-	public ResponseStatus trashNote(String token, String noteId) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<Note> already = noteRepository.findByUserIdAndNoteId(userId, noteId);
+	@Override
+	public ResponseStatus trashNote(String token, String noteid) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-			/*
-			 * response = responseCode.getResponse(401, "Invalid Credentials", token +
-			 * noteId); System.out.println("Invalid Credentials");
-			 */
+
 		} else {
 			if (already.get().isTrash() == false) {
 				already.get().setTrash(true);
@@ -178,15 +169,58 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
+	@Override
 	public ResponseStatus getAll(String token) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<User> already = userRepository.findByUserId(userId);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
-//			response = responseCode.getResponse(401, "Invalid Credentials", token);
 		} else {
 			response = responseCode.getResponse(200, "List Of Note", already.get().getNotelist());
 			System.out.println("List Get Successfully");
+		}
+		return response;
+	}
+
+	@Override
+	public ResponseStatus sortByNameAscendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
+		if (already.isEmpty()) {
+			throw new UserNotFoundException();
+		} else {
+//			List<Note> notelist = already.get().getNotelist();
+//			System.out.println(notelist);
+//
+//			notelist.sort((note1, note2) -> note1.getTitle().compareToIgnoreCase(note2.getTitle()));
+//			System.out.println(notelist);
+//			response = responseCode.getResponse(200, "Sorted NoteList Get Sucessfully", notelist);
+
+			List<Note> notelist = already.get().getNotelist();
+			System.out.println("hi"+notelist);
+			String [] note = new String [notelist.size()];
+			note = notelist.toArray(note);
+			System.out.println("hello"+note);
+			Arrays.parallelSort(note);
+			response = responseCode.getResponse(200, "Sorted NoteList Get Sucessfully", note.toString());
+
+		}
+		return response;
+	}
+
+	@Override
+	public ResponseStatus sortByNameDescendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
+		if (already.isEmpty()) {
+			throw new UserNotFoundException();
+		} else {
+			List<Note> notelist = already.get().getNotelist();
+			System.out.println(notelist);
+			String [] note = new String [notelist.size()];
+			note = notelist.toArray(note);
+			Arrays.parallelSort(note);
+			response = responseCode.getResponse(200, "Sorted NoteList Get Sucessfully", note.toString());
 		}
 		return response;
 	}

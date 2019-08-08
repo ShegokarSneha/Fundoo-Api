@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class User {
 
 	@Id
-	private String userId;
+	private String userid;
 
 	@Field("Access_Token")
 	private String token;
@@ -47,12 +47,12 @@ public class User {
 	@Field("Label_List")
 	private List<Label> labellist = new ArrayList<Label>();
 
-	public String getUserId() {
-		return userId;
+	public String getUserid() {
+		return userid;
 	}
 
 	public void setUserId(String id) {
-		this.userId = id;
+		this.userid = id;
 	}
 
 	public String getToken() {
@@ -137,7 +137,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
+		return "User [userid=" + userid + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
 				+ ", username=" + username + ", email=" + email + ", password=" + password + ", date=" + date
 				+ ", isVerfied=" + isVerfied + ", notelist=" + notelist + ", labellist=" + labellist + "]";
 	}

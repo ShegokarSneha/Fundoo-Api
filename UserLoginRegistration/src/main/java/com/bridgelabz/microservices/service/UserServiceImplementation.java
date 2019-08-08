@@ -22,8 +22,6 @@ import com.bridgelabz.microservices.repository.UserRepository;
 import com.bridgelabz.microservices.response.ResponseCode;
 import com.bridgelabz.microservices.response.ResponseStatus;
 
-
-
 @Service("ServiceInterface")
 public class UserServiceImplementation implements UserServiceInterface {
 
@@ -98,8 +96,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ======================== Verify User ======================//
 
 	public ResponseStatus verifyUser(String token) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = userRepository.findByUserId(userId);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 		if (alreadyuser.isEmpty()) {
 			System.out.println("User Not Found");
 			throw new UserNotFoundException();
@@ -188,8 +186,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ======================== Reset Password ===========================//
 
 	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto) {
-		String id = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = userRepository.findByUserId(id);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 
 		if (alreadyuser.isEmpty()) {
 			System.out.println("User Not Found");
@@ -207,6 +205,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 		return response;
 	}
 
+	// ================ Get All Users ==================//
+
 	public ResponseStatus getAllUsers() {
 		List<User> userlist = userRepository.findAll();
 		response = responseCode.getResponse(200, "User List", userlist);
@@ -214,5 +214,4 @@ public class UserServiceImplementation implements UserServiceInterface {
 		return response;
 	}
 
-	
 }

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class QueueProducer {
-	// protected Logger logger = LoggerFactory.getLogger(getClass());
 	@Value("${fanout.exchange}")
 	private String fanoutExchange;
 	private final RabbitTemplate rabbitTemplate;
@@ -22,9 +21,7 @@ public class QueueProducer {
 	}
 
 	public void produce(MailDto maildto) throws Exception {
-		// logger.info("Storing notification...");
 		rabbitTemplate.setExchange(fanoutExchange);
 		rabbitTemplate.convertAndSend(new ObjectMapper().writeValueAsString(maildto));
-//  logger.info("Notification stored in queue sucessfully");
 	}
 }

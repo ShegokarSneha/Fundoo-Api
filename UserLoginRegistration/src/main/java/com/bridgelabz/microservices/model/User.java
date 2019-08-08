@@ -1,7 +1,11 @@
 package com.bridgelabz.microservices.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class User {
 
 	@Id
-	private String userId;
+	private String userid;
 
 	@Field("Access_Token")
 	private String token;
@@ -35,20 +39,20 @@ public class User {
 	@Field("Verified")
 	private boolean isVerfied;
 
-/*	@DBRef
+	@DBRef
 	@Field("Notes_List")
 	private List<Note> notelist = new ArrayList<Note>();
 
 	@DBRef
 	@Field("Label_List")
-	private List<Label> labellist = new ArrayList<Label>();*/
+	private List<Label> labellist = new ArrayList<Label>();
 
 	public String getUserId() {
-		return userId;
+		return userid;
 	}
 
-	public void setUserId(String id) {
-		this.userId = id;
+	public void setUserId(String userid) {
+		this.userid = userid;
 	}
 
 	public String getToken() {
@@ -114,8 +118,7 @@ public class User {
 	public void setVerfied(boolean isVerfied) {
 		this.isVerfied = isVerfied;
 	}
-
-/*	public List<Note> getNotelist() {
+	public List<Note> getNotelist() {
 		return notelist;
 	}
 
@@ -130,10 +133,10 @@ public class User {
 	public void setLabellist(List<Label> labellist) {
 		this.labellist = labellist;
 	}
-*/
+
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
+		return "User [userId=" + userid + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
 				+ ", username=" + username + ", email=" + email + ", password=" + password + ", date=" + date
 				+ ", isVerfied=" + isVerfied + "]";
 	}

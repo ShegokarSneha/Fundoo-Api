@@ -27,7 +27,7 @@ public class UserController {
 	/***************** Registration Controller ******************/
 
 	@PostMapping(value = "/register")
-	public ResponseEntity<ResponseStatus> registerUser(@RequestBody RegisterDto register){
+	public ResponseEntity<ResponseStatus> registerUser(@RequestBody RegisterDto register) {
 		System.out.println("In Register User");
 		ResponseStatus response = iUserService.registration(register);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
@@ -69,14 +69,14 @@ public class UserController {
 		ResponseStatus response = iUserService.verifyUser(token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
-	
+
 	/***************************** Get All Users ***************************/
-	
+
 	@GetMapping(value = "/getall")
-	public ResponseEntity<ResponseStatus> getAllUsers(){
+	public ResponseEntity<ResponseStatus> getAllUsers() {
 		System.out.println("Get all Users");
 		ResponseStatus response = iUserService.getAllUsers();
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
-	
+
 }

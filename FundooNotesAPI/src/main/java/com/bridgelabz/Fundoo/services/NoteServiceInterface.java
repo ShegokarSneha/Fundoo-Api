@@ -10,17 +10,21 @@ public interface NoteServiceInterface {
 
 	public ResponseStatus createNote(@RequestBody NoteDto notedto, @PathVariable("token") String token);
 
-	public ResponseStatus updateNote(@RequestBody NoteDto noteDto, @PathVariable("token") String token,
-			@PathVariable("noteId")String noteId);
+	public ResponseStatus updateNote(@RequestBody NoteDto notedto, @PathVariable("token") String token,
+			@PathVariable("noteid")String noteid);
 	
-	public ResponseStatus deleteNote(@PathVariable("token") String token, @PathVariable("noteId") String noteId);
+	public ResponseStatus deleteNote(@PathVariable("token") String token, @PathVariable("noteid") String noteid);
 	
-	public ResponseStatus archiveNote(@PathVariable("token")String token, @PathVariable("noteId")String noteid);
+	public ResponseStatus archiveNote(@PathVariable("token")String token, @PathVariable("noteid")String noteid);
 	
-	public ResponseStatus pinnedNote(@PathVariable("token")String token, @PathVariable("noteId")String noteId);
+	public ResponseStatus pinnedNote(@PathVariable("token")String token, @PathVariable("noteid")String noteid);
 	
-	public ResponseStatus trashNote(@PathVariable("token")String token, @PathVariable("noteId")String noteId);
+	public ResponseStatus trashNote(@PathVariable("token")String token, @PathVariable("noteid")String noteid);
 	
 	public ResponseStatus getAll(String token);
+	
+	public ResponseStatus sortByNameAscendingOrder(String token);
+	
+	public ResponseStatus sortByNameDescendingOrder(String token);
 	
 }

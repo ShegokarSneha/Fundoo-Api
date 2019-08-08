@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<item key="org.eclipse.jdt.debug.ui.jre_preference_page_context.columnWidth0" value="198"/>
+	<item key="org.eclipse.jdt.debug.ui.jre_preference_page_context.columnWidth1" value="249"/>
+	<item key="org.eclipse.jdt.debug.ui.jre_preference_page_context.columnWidth2" value="96"/>
+	<item key="org.eclipse.jdt.debug.ui.jre_preference_page_context.sortColumn" value="1"/>
 	<section name="org.eclipse.jdt.debug.ui.MAIN_METHOD_SELECTION_DIALOG">
 		<item key="ShowStatusLine" value="true"/>
 		<item key="History" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0A;&lt;History&gt;&#x0A;&lt;historyRootNode&gt;&#x0A;&lt;infoNode&gt;=demo/\/home\/admin1\/.m2\/repository\/net\/bytebuddy\/byte-buddy-agent\/1.9.13\/byte-buddy-agent-1.9.13.jar&amp;lt;net.bytebuddy.agent(Attacher.class[Attacher&lt;/infoNode&gt;&#x0A;&lt;infoNode&gt;=Spring Annotation ArrayList/src\/main\/java&amp;lt;com.bridgelabz.Test{AnnotationArrayList.java[AnnotationArrayList&lt;/infoNode&gt;&#x0A;&lt;infoNode&gt;=Spring AOP Annotation/src\/main\/java&amp;lt;com.bridgelabz.Test{AopAnnotation.java[AopAnnotation&lt;/infoNode&gt;&#x0A;&lt;infoNode&gt;=Spring AOP Xml Configuration/\/home\/admin1\/.m2\/repository\/junit\/junit\/4.13-beta-3\/junit-4.13-beta-3.jar&amp;lt;org.junit.runner(JUnitCore.class[JUnitCore&lt;/infoNode&gt;&#x0A;&lt;infoNode&gt;=FundooNotesAPI/src\/main\/java&amp;lt;com.bridgelabz.Fundoo{FundooNotesApiApplication.java[FundooNotesApiApplication&lt;/infoNode&gt;&#x0A;&lt;/historyRootNode&gt;&#x0A;&lt;/History&gt;"/>

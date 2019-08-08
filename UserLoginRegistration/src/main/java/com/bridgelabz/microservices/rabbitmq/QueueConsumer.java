@@ -3,13 +3,13 @@ package com.bridgelabz.microservices.rabbitmq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.bridgelabz.microservices.Utility.MailSender;
+import com.bridgelabz.microservices.Utility.MailDataSender;
 import com.bridgelabz.microservices.dto.MailDto;
 
 @Component
 public class QueueConsumer {
 	@Autowired
-	private MailSender mailSender;
+	private MailDataSender mailSender;
 	// protected Logger logger = LoggerFactory.getLogger(getClass());
 	public void receiveMessage(String message) {
 		// logger.info("Received (String) " + message);

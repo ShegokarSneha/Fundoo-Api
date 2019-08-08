@@ -10,10 +10,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "Notes")
 public class Note {
 	@Id
-	private String noteId;
+	private String noteid;
 	
-	@Field("User_Id")
-	private String userId;
+	@Field("User_id")
+	private String userid;
 	
 	@Field("Title")
 	private String title;
@@ -40,19 +40,19 @@ public class Note {
 	private List<Label> labellist;
 
 	public String getNoteId() {
-		return noteId;
+		return noteid;
 	}
 
-	public void setNoteId(String noteId) {
-		this.noteId = noteId;
+	public void setNoteId(String noteid) {
+		this.noteid = noteid;
 	}
 
 	public String getUserId() {
-		return userId;
+		return userid;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserId(String userid) {
+		this.userid = userid;
 	}
 
 	public String getTitle() {
@@ -121,7 +121,7 @@ public class Note {
 
 	@Override
 	public String toString() {
-		return "Note [noteId=" + noteId + ", userId=" + userId + ", title=" + title + ", description=" + description
+		return "Note [noteId=" + noteid + ", userId=" + userid + ", title=" + title + ", description=" + description
 				+ ", pinned=" + pinned + ", archive=" + archive + ", trash=" + trash + ", createddate=" + createddate
 				+ ", updateddate=" + updateddate + ", labellist=" + labellist + "]";
 	}

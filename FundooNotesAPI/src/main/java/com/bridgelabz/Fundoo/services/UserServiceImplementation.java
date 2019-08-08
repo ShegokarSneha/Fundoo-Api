@@ -65,7 +65,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 			// Generating access Token
 
 			userRepository.save(user);
-			user.setToken(accessToken.generateAccessToken(user.getUserId()));
+			user.setToken(accessToken.generateAccessToken(user.getUserid()));
 			user.setDate(LocalDateTime.now());
 			userRepository.save(user);
 
@@ -83,7 +83,6 @@ public class UserServiceImplementation implements UserServiceInterface {
 			try {
 				queueProducer.produce(maildto);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			response = responseCode.getResponse(201, "User Registered Successfully...", register);
@@ -96,8 +95,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ======================== Verify User ======================//
 
 	public ResponseStatus verifyUser(String token) {
-		String userId = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = userRepository.findByUserId(userId);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 		if (alreadyuser.isEmpty()) {
 			System.out.println("User Not Found");
 			throw new UserNotFoundException();
@@ -186,8 +185,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ======================== Reset Password ===========================//
 
 	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto) {
-		String id = accessToken.verifyAccessToken(token);
-		Optional<User> alreadyuser = userRepository.findByUserId(id);
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 
 		if (alreadyuser.isEmpty()) {
 			System.out.println("User Not Found");
@@ -212,5 +211,4 @@ public class UserServiceImplementation implements UserServiceInterface {
 		return response;
 	}
 
-	
 }

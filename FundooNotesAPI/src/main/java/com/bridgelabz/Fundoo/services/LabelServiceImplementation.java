@@ -19,7 +19,7 @@ import com.bridgelabz.Fundoo.repository.UserRepository;
 import com.bridgelabz.Fundoo.result.ResponseCode;
 import com.bridgelabz.Fundoo.result.ResponseStatus;
 
-@Service("LabelServiceInterface")
+@Service("LabelService")
 public class LabelServiceImplementation implements LabelServiceInterface {
 
 	@Autowired
@@ -41,7 +41,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 
 	public ResponseStatus createLabel(LabelDto labeldto, String token) {
 		String userid = accessToken.verifyAccessToken(token);
-		Optional<User> already = userRepository.findByUserId(userid);
+		Optional<User> already = userRepository.findByUserid(userid);
 		System.out.println(already.get());
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
@@ -76,7 +76,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 			already.get().setLabelname(labeldto.getLabelname());
 			already.get().setUpdatetime(LocalDateTime.now());
 			labelRepository.save(already.get());
-			Optional<User> alreadyuser = userRepository.findByUserId(userid);
+			Optional<User> alreadyuser = userRepository.findByUserid(userid);
 			userRepository.save(alreadyuser.get());
 			response = responseCode.getResponse(200, "Label Updated Successfully...!", already.get());
 			System.out.println("Label Updated Successfully...!");
@@ -99,7 +99,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 
 	public ResponseStatus getAlllabels(String token) {
 		String userid = accessToken.verifyAccessToken(token);
-		Optional<User> already = userRepository.findByUserId(userid);
+		Optional<User> already = userRepository.findByUserid(userid);
 		if (already.isEmpty()) {
 			throw new UserNotFoundException();
 		} else {
