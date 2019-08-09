@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 import com.bridgelabz.fondooNotes.services.NoteServiceInterface;
@@ -89,9 +90,9 @@ public class NoteController {
 		ResponseStatus response = iNoteServiceInterface.updateColor(token, noteid, color);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
-	
+
 	/*************** Get User Note List *****************/
-	
+
 	@GetMapping(value = "/usernotes")
 	public ResponseEntity<ResponseStatus> getUserNotes(@RequestHeader String token) {
 		System.out.println("In Get User Notes");
@@ -110,12 +111,22 @@ public class NoteController {
 	}
 
 	/****************** Delete Remainder *********************/
+
 	@DeleteMapping(value = "/deletereminder")
 	public ResponseEntity<ResponseStatus> deleteReminder(@RequestHeader String noteid, @RequestHeader String token) {
 		System.out.println("In Deleting Reminder");
 		ResponseStatus response = iNoteServiceInterface.deleteReminder(noteid, token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
 
+	/****************** Add Collaborator List *********************/
+
+	@PutMapping(value = "/addcollaborator")
+	public ResponseEntity<ResponseStatus> addCollaborator(@RequestHeader String noteid, @RequestHeader String token,
+			@RequestBody CollaboratorDto collaborator) {
+		System.out.println("In Adding Collaborators");
+		ResponseStatus response = iNoteServiceInterface.collaborateUsers(noteid, token, collaborator);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 
 }

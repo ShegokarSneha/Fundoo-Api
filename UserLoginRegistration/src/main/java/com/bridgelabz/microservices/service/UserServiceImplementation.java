@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.microservices.Utility.AccessToken;
 import com.bridgelabz.microservices.dto.ForgetPasswordDto;
@@ -27,14 +28,19 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+
 	@Autowired
 	private ModelMapper modelMapper;
+
 	@Autowired
 	private AccessToken accessToken;
+
 	@Autowired
 	private ResponseCode responseCode;
+
 	@Autowired
 	private QueueProducer queueProducer;
 
@@ -44,6 +50,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ========================= Registering User ============================//
 
+	@Override
 	public ResponseStatus registration(RegisterDto register) {
 		boolean alreadyUser = userRepository.findByEmail(register.getEmail()).isPresent();
 		if (alreadyUser) {
@@ -95,6 +102,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ======================== Verify User ======================//
 
+	@Override
 	public ResponseStatus verifyUser(String token) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
@@ -119,6 +127,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ===================== Logging User =====================//
 
+	@Override
 	public ResponseStatus login(LoginDto login) {
 		String password = login.getPassword();
 		Optional<User> alreadyuser = userRepository.findByEmail(login.getEmail());
@@ -153,6 +162,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ====================== Forgot Password ======================//
 
+	@Override
 	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto) {
 		Optional<User> alreadyuser = userRepository.findByEmail(forgetdto.getEmail());
 		if (alreadyuser.isEmpty()) {
@@ -185,6 +195,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ======================== Reset Password ===========================//
 
+	@Override
 	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
@@ -207,11 +218,20 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// ================ Get All Users ==================//
 
+	@Override
 	public ResponseStatus getAllUsers() {
 		List<User> userlist = userRepository.findAll();
 		response = responseCode.getResponse(200, "User List", userlist);
 		System.out.println("All User get Successfully");
 		return response;
+	}
+
+	// ================ Upload Profile Picture ==================//
+
+	@Override
+	public ResponseStatus uploadProfilePic(MultipartFile imagefile, String token) {
+
+		return null;
 	}
 
 }

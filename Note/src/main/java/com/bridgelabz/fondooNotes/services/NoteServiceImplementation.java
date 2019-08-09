@@ -1,21 +1,26 @@
 package com.bridgelabz.fondooNotes.services;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.bridgelabz.fondooNotes.accesstoken.AccessToken;
+
+import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
+import com.bridgelabz.fondooNotes.dto.MailDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
+import com.bridgelabz.fondooNotes.exception.AlreadyExistsException;
 import com.bridgelabz.fondooNotes.exception.BlankException;
 import com.bridgelabz.fondooNotes.exception.NotFoundException;
+import com.bridgelabz.fondooNotes.model.Collaborator;
 import com.bridgelabz.fondooNotes.model.Note;
+import com.bridgelabz.fondooNotes.rabbitmq.QueueProducer;
 import com.bridgelabz.fondooNotes.repository.NoteRepository;
 import com.bridgelabz.fondooNotes.response.ResponseCode;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
+import com.bridgelabz.fondooNotes.uitility.AccessToken;
 
 @Service("NoteServiceInterface")
 public class NoteServiceImplementation implements NoteServiceInterface {
@@ -32,7 +37,12 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	@Autowired
 	private ResponseCode responseCode;
 
+	@Autowired
+	private QueueProducer queueProducer;
+
 	private ResponseStatus response;
+
+	MailDto maildto = new MailDto();
 
 	// ================= Create Note ====================//
 	@Override
@@ -235,27 +245,48 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		System.out.println(already.get());
 		if (!already.isPresent()) {
-			response = responseCode.getResponse(206, "Note is not present", noteid);
-			return response;
+			throw new NotFoundException("Note Not Found With Given Id");
 		}
-
-//		 DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+		LocalDateTime weekly = LocalDateTime.now().plusWeeks(1);
+		LocalDateTime monthly = LocalDateTime.now().plusMonths(1);
+		LocalDateTime yearly = LocalDateTime.now().plusYears(1);
 		System.out.println(today);
 
-		LocalDateTime reminderDateFormat = LocalDateTime.parse(reminder, formatter);
-		if (today.compareTo(reminderDateFormat) > 0) {
-			response = responseCode.getResponse(208, "Remainder time should be greater than now", reminderDateFormat);
+		switch (reminder) {
+		case "today":
+			response = responseCode.getResponse(208, "Remainder time should be greater than now", today);
 			System.out.println("Remainder time should be greater than now");
-		} else {
-			System.out.println(reminderDateFormat);
-			already.get().setReminder(reminderDateFormat);
-			noteRepository.save(already.get());
+			break;
 
-			response = responseCode.getResponse(208, "Remainder set successfully", already.get());
+		case "tomorrow":
+			already.get().setReminder(tomorrow);
+			response = responseCode.getResponse(208, "Remainder set For Tomorrow", already.get());
 			System.out.println("Remainder set successfully");
+			break;
+
+		case "weekly":
+			already.get().setReminder(weekly);
+			response = responseCode.getResponse(208, "Remainder set For Weekly", already.get());
+			System.out.println("Remainder set successfully");
+			break;
+
+		case "monthly":
+			already.get().setReminder(monthly);
+			response = responseCode.getResponse(208, "Remainder set For Monthly", already.get());
+			System.out.println("Remainder set successfully");
+			break;
+
+		case "yearly":
+			already.get().setReminder(yearly);
+			response = responseCode.getResponse(208, "Remainder set For Yearly.", already.get());
+			System.out.println("Remainder set successfully");
+			break;
+
 		}
+		noteRepository.save(already.get());
+
 		return response;
 	}
 
@@ -267,8 +298,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		if (!already.isPresent()) {
-			response = responseCode.getResponse(404, "Note is not present", noteid);
-			System.out.println("Note is not present");
+			throw new NotFoundException("Note Not Found With Given Id");
+
 		} else {
 			already.get().setReminder(null);
 			noteRepository.save(already.get());
@@ -278,9 +309,51 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		return response;
 	}
 
+	// ============ Add Collaborator to Note ==================//
+
+	@Override
+	public ResponseStatus collaborateUsers(String noteid, String token, CollaboratorDto collaboratordto) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
+		if (!note.isPresent()) {
+			throw new NotFoundException("Note Not Found With Given Id");
+		}
+		System.out.println(note);
+
+		Optional<Collaborator> coll = note.get().getCollaboratorlist().stream()
+				.filter(data -> data.getCollaboratorlist().equals(collaboratordto.getCollaboratorlist())).findFirst();
+		System.out.println(coll);
+		if (!coll.isPresent()) {
+			Collaborator collaborator = modelMapper.map(collaboratordto, Collaborator.class);
+			note.get().getCollaboratorlist().add(collaborator);
+			noteRepository.save(note.get());
+
+			String text = collaborator.getOwner() + "\n Has added a note with you" + "\nNote Details : "
+					+ note.get().getTitle() + " " + note.get().getDescription();
+
+			for (int i = 0; i < collaborator.getCollaboratorlist().size(); i++) {
+				maildto.setEmail(collaborator.getCollaboratorlist().get(i));
+				maildto.setSubject("Note Collaboration");
+				maildto.setBody(text);
+				try {
+					queueProducer.produce(maildto);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			response = responseCode.getResponse(200, "Collaborator Added Successfully", note.get());
+			System.out.println("Collaborator Added Successfully");
+		} else {
+			throw new AlreadyExistsException("Collaborator Is Already Exist");
+		}
+		return response;
+	}
+
+	// ============= Sort Notes By Name In Ascending Order =============//
+
 //	public ResponseStatus sortByNameAscendingOrder(String token) { 
 //		String userid = accessToken.verifyAccessToken(token);
-//		Optional<User> already = userRepository.findByUserid(userid); 
+//		Optional<Note> note = noteRepository.findByUserid(userid);
 //		if (already.isEmpty()) { 
 //			throw new UserNotFoundException(); 
 //			} else { 

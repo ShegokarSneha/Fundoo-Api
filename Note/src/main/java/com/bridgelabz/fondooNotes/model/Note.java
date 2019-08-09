@@ -48,6 +48,9 @@ public class Note {
 	@Field("Label_List")
 	private List<Label> labellist = new ArrayList<Label>();
 
+	@Field("Collaborator_List")
+	private List<Collaborator> collaboratorlist = new ArrayList<Collaborator>();
+
 	public String getNoteid() {
 		return noteid;
 	}
@@ -144,12 +147,20 @@ public class Note {
 		this.labellist = labellist;
 	}
 
+	public List<Collaborator> getCollaboratorlist() {
+		return collaboratorlist;
+	}
+
+	public void setCollaboratorlist(List<Collaborator> collaboratorlist) {
+		this.collaboratorlist = collaboratorlist;
+	}
+
 	@Override
 	public String toString() {
 		return "Note [noteid=" + noteid + ", userid=" + userid + ", title=" + title + ", description=" + description
 				+ ", pinned=" + pinned + ", archive=" + archive + ", trash=" + trash + ", created=" + created
-				+ ", updated=" + updated + ", color=" + color + ", reminder=" + reminder + ", labellist="
-				+ labellist + "]";
+				+ ", updated=" + updated + ", color=" + color + ", reminder=" + reminder + ", labellist=" + labellist
+				+ ", collaboratorlist=" + collaboratorlist + "]";
 	}
 
 }

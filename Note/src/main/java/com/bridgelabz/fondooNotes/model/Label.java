@@ -61,13 +61,11 @@ public class Label {
 	public void setUpdated(LocalDateTime updated) {
 		this.updated = updated;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Label [labelid=" + labelid + ", userid=" + userid + ", labelname=" + labelname + ", created="
-				+ created + ", updated=" + updated +"]";
+		return "Label [labelid=" + labelid + ", userid=" + userid + ", labelname=" + labelname + ", created=" + created
+				+ ", updated=" + updated + "]";
 	}
-
-	
 
 }

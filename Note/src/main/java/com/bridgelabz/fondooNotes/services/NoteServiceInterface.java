@@ -1,5 +1,6 @@
 package com.bridgelabz.fondooNotes.services;
 
+import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 
@@ -26,5 +27,9 @@ public interface NoteServiceInterface {
 	public ResponseStatus deleteReminder(String noteid, String token);
 	
 	public ResponseStatus getUserNotes(String token);
+	
+	public ResponseStatus collaborateUsers(String noteid, String token, CollaboratorDto collaborator);
+	
+//	public ResponseStatus sortByNameAscending ();
 
 }

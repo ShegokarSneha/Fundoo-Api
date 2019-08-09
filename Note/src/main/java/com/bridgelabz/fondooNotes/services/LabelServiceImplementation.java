@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.fondooNotes.accesstoken.AccessToken;
 import com.bridgelabz.fondooNotes.dto.LabelDto;
 import com.bridgelabz.fondooNotes.exception.AlreadyExistsException;
 import com.bridgelabz.fondooNotes.exception.BlankException;
@@ -19,6 +18,7 @@ import com.bridgelabz.fondooNotes.repository.LabelRepository;
 import com.bridgelabz.fondooNotes.repository.NoteRepository;
 import com.bridgelabz.fondooNotes.response.ResponseCode;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
+import com.bridgelabz.fondooNotes.uitility.AccessToken;
 
 @Service("LabelServiceInterface")
 public class LabelServiceImplementation implements LabelServiceInterface {
@@ -136,6 +136,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 	}
 
 	// ================== Add Labels To Note ==================//
+
 	@Override
 	public ResponseStatus addLabeltoNote(String token, String labelid, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
@@ -151,6 +152,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 			label.get().setUpdated(LocalDateTime.now());
 			note.get().setUpdated(LocalDateTime.now());
 			note.get().getLabellist().add(label.get());
+			labelRepository.save(label.get());
 			noteRepository.save(note.get());
 			response = responseCode.getResponse(200, "Label Added To Note Successfully.", note.get());
 			System.out.println(note.get() + "\nLabel Added To Note Successfully.");
@@ -159,6 +161,8 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 		}
 		return response;
 	}
+
+	// ================== Remove Labels From Note ==================//
 
 	@Override
 	public ResponseStatus removeLabelfromNote(String token, String labelid, String noteid) {
@@ -174,7 +178,7 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 		if (label2.isPresent()) {
 			label.get().setUpdated(LocalDateTime.now());
 			note.get().setUpdated(LocalDateTime.now());
-			note.get().getLabellist().removeIf(list-> list.getLabelid().equals(label.get().getLabelid()));
+			note.get().getLabellist().removeIf(list -> list.getLabelid().equals(label.get().getLabelid()));
 			System.out.println(note.get().getLabellist());
 			noteRepository.save(note.get());
 			response = responseCode.getResponse(200, "Label Removed From Note Successfully.", note.get());
@@ -185,18 +189,20 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 		return response;
 	}
 
+	// ================== Get Labels of Note ==================//
+
 	@Override
 	public ResponseStatus getLabelsofNotes(String token, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
-		
+
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if(!note.isPresent()) { 
+		if (!note.isPresent()) {
 			throw new BlankException("Note Not Present");
 		}
 		List<Label> label = note.get().getLabellist();
-		
+
 		response = responseCode.getResponse(200, "Label List Of Note", label);
-		System.out.println("Label List Of Note\n"+label);
+		System.out.println("Label List Of Note\n" + label);
 		return response;
 	}
 }
