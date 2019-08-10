@@ -78,9 +78,8 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 
 		Optional<Label> already = labelRepository.findByLabelidAndUserid(labelid, userid);
 		System.out.println(already);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Label Not Found With Given Label Id.");
-		}
+		already.orElseThrow(() -> new NotFoundException("Label Not Found With Given Id"));
+
 		if (already.get().getLabelname().equalsIgnoreCase(labeldto.getLabelname())) {
 			throw new AlreadyExistsException("Label Name Already Exist.");
 		}
@@ -98,13 +97,12 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 	public ResponseStatus deleteLabel(String token, String labelid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Label> already = labelRepository.findByLabelidAndUserid(labelid, userid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Label Not found");
-		} else {
+		already.orElseThrow(() -> new NotFoundException("Label Not Found With Given Id"));
+
 			labelRepository.delete(already.get());
 			response = responseCode.getResponse(200, "Label Deleted Successfully....!", null);
 			System.out.println("Label Deleted Successfully....!");
-		}
+		
 		return response;
 	}
 
@@ -130,6 +128,9 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 	@Override
 	public ResponseStatus getAll() {
 		List<Label> labellist = labelRepository.findAll();
+		if(labellist.isEmpty()) {
+			throw new BlankException("LabelList is Empty");
+		}
 		response = responseCode.getResponse(200, "Label List", labellist);
 		System.out.println(labellist + "\nLabelList Get Successfully");
 		return response;
@@ -141,9 +142,8 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 	public ResponseStatus addLabeltoNote(String token, String labelid, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Label> label = labelRepository.findByLabelidAndUserid(labelid, userid);
-		if (label.isEmpty()) {
-			throw new BlankException("Label not Exist");
-		}
+		label.orElseThrow(() -> new NotFoundException("Label Not Found With Given Id"));
+
 
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
 		Optional<Label> label2 = note.get().getLabellist().stream()
@@ -168,9 +168,8 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 	public ResponseStatus removeLabelfromNote(String token, String labelid, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Label> label = labelRepository.findByLabelidAndUserid(labelid, userid);
-		if (label.isEmpty()) {
-			throw new BlankException("Label not Exist");
-		}
+		label.orElseThrow(() -> new NotFoundException("Label Not Found With Given Id"));
+
 
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
 		Optional<Label> label2 = note.get().getLabellist().stream()
@@ -196,9 +195,8 @@ public class LabelServiceImplementation implements LabelServiceInterface {
 		String userid = accessToken.verifyAccessToken(token);
 
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (!note.isPresent()) {
-			throw new BlankException("Note Not Present");
-		}
+		note.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
 		List<Label> label = note.get().getLabellist();
 
 		response = responseCode.getResponse(200, "Label List Of Note", label);

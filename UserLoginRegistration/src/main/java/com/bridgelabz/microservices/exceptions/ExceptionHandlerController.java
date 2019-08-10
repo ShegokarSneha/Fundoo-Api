@@ -16,13 +16,13 @@ public class ExceptionHandlerController {
 	private ResponseCode responseCode;
 	private ResponseStatus response;
 
-	@ExceptionHandler(value = UserNotFoundException.class)
+	@ExceptionHandler(value = NotFoundException.class)
 	public ResponseEntity<ResponseStatus> exceptionHandling() {
 		response = responseCode.getResponse(404, "User Not Found", null);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.NOT_FOUND);
 	}
 	
-	@ExceptionHandler(value = UserAlreadyExistsException.class)
+	@ExceptionHandler(value = AlreadyExistsException.class)
 	public final ResponseEntity<ResponseStatus> exceptionHandler(){
 		response = responseCode.getResponse(400, "User Already Exist...", null);
 		System.out.println("\nUser Already Registered");

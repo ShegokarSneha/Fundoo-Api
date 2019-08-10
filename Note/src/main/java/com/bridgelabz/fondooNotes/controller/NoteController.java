@@ -129,4 +129,40 @@ public class NoteController {
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 
+	/************* Get Note List Sorted In Ascending Order ************/
+
+	@GetMapping(value = "/sorttitleascending")
+	public ResponseEntity<ResponseStatus> sortByTitleAscending(@RequestHeader String token) {
+		System.out.println("In Sorting Note List By Title In Ascending Order");
+		ResponseStatus response = iNoteServiceInterface.sortByTitleAscendingOrder(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+
+	/************* Get Note List Sorted In Descending Order ************/
+
+	@GetMapping(value = "/sorttitledescending")
+	public ResponseEntity<ResponseStatus> sortByTitleDescending(@RequestHeader String token) {
+		System.out.println("In Sorting Note List By Title In Descending Order");
+		ResponseStatus response = iNoteServiceInterface.sortByTitleDescendingOrder(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+
+	/************* Get Note List Sorted In Ascending Order ************/
+
+	@GetMapping(value = "/sortdateascending")
+	public ResponseEntity<ResponseStatus> sortByDateAscending(@RequestHeader String token) {
+		System.out.println("In Sorting Note List By Date In Ascending Order");
+		ResponseStatus response = iNoteServiceInterface.sortByDateAscendingOrder(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+
+	/************* Get Note List Sorted In Descending Order ************/
+
+	@GetMapping(value = "/sortdatedescending")
+	public ResponseEntity<ResponseStatus> sortByDateDescending(@RequestHeader String token) {
+		System.out.println("In Sorting Note List By Date In Descending Order");
+		ResponseStatus response = iNoteServiceInterface.sortByDateDescendingOrder(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+
 }

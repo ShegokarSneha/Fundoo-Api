@@ -10,15 +10,15 @@ import com.bridgelabz.fondooNotes.model.Note;
 
 @Repository
 public interface NoteRepository extends MongoRepository<Note, String> {
-	
+
 	public Optional<Note> findByUserid(String userid);
-	
+
 	public Optional<Note> findByNoteid(String noteid);
 
 	public Optional<Note> findByUseridAndNoteid(String userid, String noteid);
-	
+
 	public List<Note> findAll();
-	
+
 	public List<Note> findAllByUserid(String userid);
 
 }

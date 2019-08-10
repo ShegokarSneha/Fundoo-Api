@@ -91,5 +91,14 @@ public class UserController {
 		ResponseStatus response = iUserService.uploadProfilePic(imagefile, token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
+	
+	/*********************** Get Profile Picture **********************/
+	
+	@GetMapping(value = "/getpic")
+	public ResponseEntity<ResponseStatus> getProfilePic(@RequestHeader String token){
+		System.out.println("Get Profile Picture");
+		ResponseStatus response = iUserService.getProfilePic(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
 
 }

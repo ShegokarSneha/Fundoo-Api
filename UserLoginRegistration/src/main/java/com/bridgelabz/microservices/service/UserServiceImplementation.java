@@ -1,8 +1,14 @@
 package com.bridgelabz.microservices.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +22,7 @@ import com.bridgelabz.microservices.dto.LoginDto;
 import com.bridgelabz.microservices.dto.MailDto;
 import com.bridgelabz.microservices.dto.RegisterDto;
 import com.bridgelabz.microservices.dto.ResetPasswordDto;
-import com.bridgelabz.microservices.exceptions.UserNotFoundException;
+import com.bridgelabz.microservices.exceptions.NotFoundException;
 import com.bridgelabz.microservices.model.User;
 import com.bridgelabz.microservices.rabbitmq.QueueProducer;
 import com.bridgelabz.microservices.repository.UserRepository;
@@ -48,6 +54,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	private MailDto maildto = new MailDto();
 
+	private Path path = Paths.get("/home/admin1/Downloads");
+
 	// ========================= Registering User ============================//
 
 	@Override
@@ -72,7 +80,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 			// Generating access Token
 
 			userRepository.save(user);
-			user.setToken(accessToken.generateAccessToken(user.getUserId()));
+			user.setToken(accessToken.generateAccessToken(user.getUserid()));
 			user.setDate(LocalDateTime.now());
 			userRepository.save(user);
 
@@ -106,22 +114,19 @@ public class UserServiceImplementation implements UserServiceInterface {
 	public ResponseStatus verifyUser(String token) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
-		} else {
-			User verifieduser = alreadyuser.get();
-			if (verifieduser.isVerfied() == false) {
+		alreadyuser.orElseThrow(() -> new NotFoundException());
+		User verifieduser = alreadyuser.get();
+		if (verifieduser.isVerfied() == false) {
 
-				verifieduser.setVerfied(true);
-				userRepository.save(verifieduser);
-				response = responseCode.getResponse(200, "User verified Successfully...", verifieduser);
-				System.out.println("User Verfied");
-			} else {
-				response = responseCode.getResponse(200, "User verified already...", verifieduser);
-				System.out.println("User Verfied already");
-			}
+			verifieduser.setVerfied(true);
+			userRepository.save(verifieduser);
+			response = responseCode.getResponse(200, "User verified Successfully...", verifieduser);
+			System.out.println("User Verfied");
+		} else {
+			response = responseCode.getResponse(200, "User verified already...", verifieduser);
+			System.out.println("User Verfied already");
 		}
+
 		return response;
 	}
 
@@ -131,33 +136,29 @@ public class UserServiceImplementation implements UserServiceInterface {
 	public ResponseStatus login(LoginDto login) {
 		String password = login.getPassword();
 		Optional<User> alreadyuser = userRepository.findByEmail(login.getEmail());
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
+		alreadyuser.orElseThrow(() -> new NotFoundException());
 
-		} else {
+		if (alreadyuser.get().isVerfied() == true) {
+			if (passwordEncoder.matches(password, alreadyuser.get().getPassword())) {
 
-			if (alreadyuser.get().isVerfied() == true) {
-				if (passwordEncoder.matches(password, alreadyuser.get().getPassword())) {
+				// LOGIN SUCCESSFULLY
 
-					// LOGIN SUCCESSFULLY
-
-					response = responseCode.getResponse(200, "User Login Successfully...", login);
-					System.out.println("\nUser Login Successfully...");
-				} else {
-
-					// INAVLID PASSWORD
-
-					response = responseCode.getResponse(401, "Invalid Password", login);
-					System.out.println("\nInvalid Password");
-				}
+				response = responseCode.getResponse(200, "User Login Successfully...", login);
+				System.out.println("\nUser Login Successfully...");
 			} else {
-				// Email Not verified
-				response = responseCode.getResponse(204, "Email Not verified", alreadyuser.get());
-				System.out.println("User Not Verified...");
+
+				// INAVLID PASSWORD
+
+				response = responseCode.getResponse(401, "Invalid Password", login);
+				System.out.println("\nInvalid Password");
 			}
+		} else {
+			// Email Not verified
+			response = responseCode.getResponse(204, "Email Not verified", alreadyuser.get());
+			System.out.println("User Not Verified...");
 		}
 		return response;
+
 	}
 
 	// ====================== Forgot Password ======================//
@@ -165,32 +166,28 @@ public class UserServiceImplementation implements UserServiceInterface {
 	@Override
 	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto) {
 		Optional<User> alreadyuser = userRepository.findByEmail(forgetdto.getEmail());
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
+		alreadyuser.orElseThrow(() -> new NotFoundException());
 
-		} else {
+		String url = "http://localhost:8080/user/resetpassword/" + alreadyuser.get().getToken();
 
-			String url = "http://localhost:8080/user/resetpassword/" + alreadyuser.get().getToken();
+		String text = "Hello " + alreadyuser.get().getFirstname() + "\n" + "You  requested to reset your Password."
+				+ " To reset your password please click on the reset password link : " + url;
 
-			String text = "Hello " + alreadyuser.get().getFirstname() + "\n" + "You  requested to reset your Password."
-					+ " To reset your password please click on the reset password link : " + url;
+		maildto.setEmail(alreadyuser.get().getEmail());
+		maildto.setSubject("Reset Password Link");
+		maildto.setBody(text);
 
-			maildto.setEmail(alreadyuser.get().getEmail());
-			maildto.setSubject("Reset Password Link");
-			maildto.setBody(text);
-
-			try {
-				queueProducer.produce(maildto);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			response = responseCode.getResponse(200,
-					"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
-			System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
+		try {
+			queueProducer.produce(maildto);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		response = responseCode.getResponse(200,
+				"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
+		System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
 		return response;
+
 	}
 
 	// ======================== Reset Password ===========================//
@@ -200,19 +197,16 @@ public class UserServiceImplementation implements UserServiceInterface {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
 
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
-		} else {
-			User resetuser = alreadyuser.get();
-			System.out.println(setpasswordDto.getPassword());
-			resetuser.setPassword(passwordEncoder.encode(setpasswordDto.getPassword()));
-			userRepository.save(resetuser);
+		alreadyuser.orElseThrow(() -> new NotFoundException());
+		User resetuser = alreadyuser.get();
+		System.out.println(setpasswordDto.getPassword());
+		resetuser.setPassword(passwordEncoder.encode(setpasswordDto.getPassword()));
+		userRepository.save(resetuser);
 
-			response = responseCode.getResponse(200, "You have successfully reset your password. You may now login.",
-					setpasswordDto);
-			System.out.println("Password Reset Successfully...!");
-		}
+		response = responseCode.getResponse(200, "You have successfully reset your password. You may now login.",
+				setpasswordDto);
+		System.out.println("Password Reset Successfully...!");
+
 		return response;
 	}
 
@@ -230,8 +224,34 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	@Override
 	public ResponseStatus uploadProfilePic(MultipartFile imagefile, String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
+		already.orElseThrow(() -> new NotFoundException());
+		UUID uuid = UUID.randomUUID();
+		String fileid = uuid.toString();
+		try {
+			Files.copy(imagefile.getInputStream(), path.resolve(fileid), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		already.get().setProfilepic(fileid);
+		userRepository.save(already.get());
+		response = responseCode.getResponse(200, "Profile Picture set Successfully", fileid);
+		System.out.println("Profile Picture set Successfully");
+		return response;
+	}
 
-		return null;
+	// ================ Get Profile Picture ==================//
+
+	@Override
+	public ResponseStatus getProfilePic(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
+		already.orElseThrow(() -> new NotFoundException());
+		String pic = already.get().getProfilepic();
+		response = responseCode.getResponse(200, "Profile Picture get Successfully", pic);
+		System.out.println("Profile Picture get Successfully");
+		return response;
 	}
 
 }

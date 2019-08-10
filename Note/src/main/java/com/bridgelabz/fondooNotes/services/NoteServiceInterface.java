@@ -25,11 +25,17 @@ public interface NoteServiceInterface {
 	public ResponseStatus setReminder(String noteid, String token, String reminder);
 
 	public ResponseStatus deleteReminder(String noteid, String token);
-	
+
 	public ResponseStatus getUserNotes(String token);
-	
+
 	public ResponseStatus collaborateUsers(String noteid, String token, CollaboratorDto collaborator);
-	
-//	public ResponseStatus sortByNameAscending ();
+
+	public ResponseStatus sortByTitleAscendingOrder(String token);
+
+	public ResponseStatus sortByTitleDescendingOrder(String token);
+
+	public ResponseStatus sortByDateAscendingOrder(String token);
+
+	public ResponseStatus sortByDateDescendingOrder(String token);
 
 }

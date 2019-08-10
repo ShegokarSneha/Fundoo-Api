@@ -1,6 +1,7 @@
 package com.bridgelabz.fondooNotes.services;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,20 +80,19 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		String userid = accessToken.verifyAccessToken(token);
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
-		} else {
-			already.get().setTitle(notedto.getTitle());
-			already.get().setDescription(notedto.getDescription());
-			already.get().setUpdated(LocalDateTime.now());
-			noteRepository.save(already.get());
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
+		already.get().setTitle(notedto.getTitle());
+		already.get().setDescription(notedto.getDescription());
+		already.get().setUpdated(LocalDateTime.now());
+		noteRepository.save(already.get());
 
 //			Optional<User> user = userRepository.findByUserid(userid);
 //			userRepository.save(user.get());
 
-			response = responseCode.getResponse(200, "Note Updated Successfully...!", already.get());
-			System.out.println("Note Updated Successfully...!");
-		}
+		response = responseCode.getResponse(200, "Note Updated Successfully...!", already.get());
+		System.out.println("Note Updated Successfully...!");
+
 		return response;
 	}
 
@@ -102,10 +102,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus deleteNote(String token, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
 
-		}
 		if (already.get().isTrash() == false) {
 			already.get().setTrash(true);
 			already.get().setUpdated(LocalDateTime.now());
@@ -124,22 +122,21 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus archiveNote(String token, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
+		if (already.get().isArchive() == false) {
+			already.get().setArchive(true);
+			response = responseCode.getResponse(200, "Archived Successfully", already.get());
+			System.out.println("Archived Successfully");
 		} else {
-			if (already.get().isArchive() == false) {
-				already.get().setArchive(true);
-				response = responseCode.getResponse(200, "Archived Successfully", already.get());
-				System.out.println("Archived Successfully");
-			} else {
-				already.get().setArchive(false);
-				response = responseCode.getResponse(200, "Restore Archived Note Successfully", already.get());
-				System.out.println("UnArchived Successfully");
-			}
-			noteRepository.save(already.get());
+			already.get().setArchive(false);
+			response = responseCode.getResponse(200, "Restore Archived Note Successfully", already.get());
+			System.out.println("UnArchived Successfully");
 		}
+		noteRepository.save(already.get());
 
 		return response;
+
 	}
 
 	// ================= Pinned Note ====================//
@@ -148,22 +145,21 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus pinnedNote(String token, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
+		if (already.get().isPinned() == false) {
+			already.get().setPinned(true);
+			response = responseCode.getResponse(200, "Pinned Successfully", already.get());
+			System.out.println("Pinned Successfully");
 		} else {
-			if (already.get().isPinned() == false) {
-				already.get().setPinned(true);
-				response = responseCode.getResponse(200, "Pinned Successfully", already.get());
-				System.out.println("Pinned Successfully");
-			} else {
-				already.get().setPinned(false);
-				response = responseCode.getResponse(200, "UnPinned Successfully", already.get());
-				System.out.println("UnPinned Successfully");
-			}
-			noteRepository.save(already.get());
+			already.get().setPinned(false);
+			response = responseCode.getResponse(200, "UnPinned Successfully", already.get());
+			System.out.println("UnPinned Successfully");
 		}
+		noteRepository.save(already.get());
 
 		return response;
+
 	}
 
 	// ================= Trashed Note ====================//
@@ -172,22 +168,20 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus trashNote(String token, String noteid) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
 
+		if (already.get().isTrash() == false) {
+			already.get().setTrash(true);
+			response = responseCode.getResponse(200, "Trash Successfully", already.get());
+			System.out.println("Trash Successfully");
 		} else {
-			if (already.get().isTrash() == false) {
-				already.get().setTrash(true);
-				response = responseCode.getResponse(200, "Trash Successfully", already.get());
-				System.out.println("Trash Successfully");
-			} else {
-				already.get().setTrash(false);
-				response = responseCode.getResponse(200, "Restore Trash Successfully", already.get());
-				System.out.println("Restore Trash Successfully");
-			}
-			noteRepository.save(already.get());
+			already.get().setTrash(false);
+			response = responseCode.getResponse(200, "Restore Trash Successfully", already.get());
+			System.out.println("Restore Trash Successfully");
 		}
+		noteRepository.save(already.get());
 		return response;
+
 	}
 
 	// ================= Get All Note ====================//
@@ -210,15 +204,13 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus updateColor(String token, String noteid, String color) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
 
-		if (already.isEmpty()) {
-			throw new NotFoundException("Note Not Found With Given Id");
-		} else {
-			already.get().setColor(color);
-			response = responseCode.getResponse(200, "Colour Updated Successfully", already.get());
-			System.out.println("Colour Updated Successfully");
-		}
+		already.get().setColor(color);
+		response = responseCode.getResponse(200, "Colour Updated Successfully", already.get());
+		System.out.println("Colour Updated Successfully");
 		return response;
+
 	}
 
 	// ================ Get All Notes of specific User =============//
@@ -244,9 +236,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		System.out.println(already.get());
-		if (!already.isPresent()) {
-			throw new NotFoundException("Note Not Found With Given Id");
-		}
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
 		LocalDateTime today = LocalDateTime.now();
 		LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 		LocalDateTime weekly = LocalDateTime.now().plusWeeks(1);
@@ -297,15 +288,13 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		String userid = accessToken.verifyAccessToken(token);
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (!already.isPresent()) {
-			throw new NotFoundException("Note Not Found With Given Id");
+		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
 
-		} else {
-			already.get().setReminder(null);
-			noteRepository.save(already.get());
-			response = responseCode.getResponse(200, "Reminder Deleted Successfully", already.get());
-			System.out.println("Reminder Deleted Successfully");
-		}
+		already.get().setReminder(null);
+		noteRepository.save(already.get());
+		response = responseCode.getResponse(200, "Reminder Deleted Successfully", already.get());
+		System.out.println("Reminder Deleted Successfully");
+
 		return response;
 	}
 
@@ -315,9 +304,8 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	public ResponseStatus collaborateUsers(String noteid, String token, CollaboratorDto collaboratordto) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
-		if (!note.isPresent()) {
-			throw new NotFoundException("Note Not Found With Given Id");
-		}
+		note.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
+
 		System.out.println(note);
 
 		Optional<Collaborator> coll = note.get().getCollaboratorlist().stream()
@@ -346,6 +334,66 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		} else {
 			throw new AlreadyExistsException("Collaborator Is Already Exist");
 		}
+		return response;
+	}
+
+	// ============= Sort Notes By Name In Ascending Order =============//
+
+	@Override
+	public ResponseStatus sortByTitleAscendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		List<Note> notelist = noteRepository.findAllByUserid(userid);
+		if (notelist.isEmpty()) {
+			throw new BlankException("Notes Not Exist");
+		}
+		notelist.sort(Comparator.comparing(Note::getTitle));
+		response = responseCode.getResponse(200, "Sorted Note List Ascending Order", notelist);
+		System.out.println("Note List Sorted By Title in Ascending Order" + "\n" + notelist);
+		return response;
+	}
+
+	// ============= Sort Notes By Name In Descending Order =============//
+
+	@Override
+	public ResponseStatus sortByTitleDescendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		List<Note> notelist = noteRepository.findAllByUserid(userid);
+		if (notelist.isEmpty()) {
+			throw new BlankException("Notes Not Exist");
+		}
+		notelist.sort(Comparator.comparing(Note::getTitle).reversed());
+		response = responseCode.getResponse(200, "Sorted Note List In Descending Order", notelist);
+		System.out.println("Note List Sorted By Title in Descending Order" + "\n" + notelist);
+		return response;
+	}
+
+	// ============= Sort Notes By Date In Ascending Order =============//
+
+	@Override
+	public ResponseStatus sortByDateAscendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		List<Note> notelist = noteRepository.findAllByUserid(userid);
+		if (notelist.isEmpty()) {
+			throw new BlankException("Notes Not Exist");
+		}
+		notelist.sort(Comparator.comparing(Note::getCreated));
+		response = responseCode.getResponse(200, "Sorted Note List Ascending Order", notelist);
+		System.out.println("Note List Sorted By Date in Ascending Order" + "\n" + notelist);
+		return response;
+	}
+
+	// ============= Sort Notes By Date In Ascending Order =============//
+
+	@Override
+	public ResponseStatus sortByDateDescendingOrder(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		List<Note> notelist = noteRepository.findAllByUserid(userid);
+		if (notelist.isEmpty()) {
+			throw new BlankException("Notes Not Exist");
+		}
+		notelist.sort(Comparator.comparing(Note::getCreated).reversed());
+		response = responseCode.getResponse(200, "Sorted Note List In Descending Order", notelist);
+		System.out.println("Note List Sorted By Date in Descending Order" + "\n" + notelist);
 		return response;
 	}
 

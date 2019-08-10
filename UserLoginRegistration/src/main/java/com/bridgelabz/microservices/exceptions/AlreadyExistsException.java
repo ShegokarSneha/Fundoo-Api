@@ -1,11 +1,10 @@
 package com.bridgelabz.microservices.exceptions;
 
-public class UserNotFoundException extends RuntimeException {
-
+public class AlreadyExistsException extends RuntimeException{
+	
 	private static final long serialVersionUID = 1L;
-
-	public UserNotFoundException() {
+	
+	public AlreadyExistsException() {
 		super();
 	}
-
 }

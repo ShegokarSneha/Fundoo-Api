@@ -24,4 +24,6 @@ public interface UserServiceInterface {
 	
 	public ResponseStatus uploadProfilePic(MultipartFile imagefile, String token);
 
+	public ResponseStatus getProfilePic(String token);
+
 }

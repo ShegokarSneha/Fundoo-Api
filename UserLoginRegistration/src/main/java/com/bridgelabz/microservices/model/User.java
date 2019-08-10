@@ -1,11 +1,7 @@
 package com.bridgelabz.microservices.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -39,19 +35,14 @@ public class User {
 	@Field("Verified")
 	private boolean isVerfied;
 
-	@DBRef
-	@Field("Notes_List")
-	private List<Note> notelist = new ArrayList<Note>();
+	@Field("Profile_Pic")
+	private String profilepic;
 
-	@DBRef
-	@Field("Label_List")
-	private List<Label> labellist = new ArrayList<Label>();
-
-	public String getUserId() {
+	public String getUserid() {
 		return userid;
 	}
 
-	public void setUserId(String userid) {
+	public void setUserid(String userid) {
 		this.userid = userid;
 	}
 
@@ -118,27 +109,20 @@ public class User {
 	public void setVerfied(boolean isVerfied) {
 		this.isVerfied = isVerfied;
 	}
-	public List<Note> getNotelist() {
-		return notelist;
+
+	public String getProfilepic() {
+		return profilepic;
 	}
 
-	public void setNotelist(List<Note> notelist) {
-		this.notelist = notelist;
-	}
-
-	public List<Label> getLabellist() {
-		return labellist;
-	}
-
-	public void setLabellist(List<Label> labellist) {
-		this.labellist = labellist;
+	public void setProfilepic(String profilepic) {
+		this.profilepic = profilepic;
 	}
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userid + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
+		return "User [userid=" + userid + ", token=" + token + ", firstname=" + firstname + ", lastname=" + lastname
 				+ ", username=" + username + ", email=" + email + ", password=" + password + ", date=" + date
-				+ ", isVerfied=" + isVerfied + "]";
+				+ ", isVerfied=" + isVerfied + ", profilepic=" + profilepic + "]";
 	}
 
 }
