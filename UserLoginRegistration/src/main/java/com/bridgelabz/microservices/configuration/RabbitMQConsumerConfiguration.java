@@ -1,4 +1,4 @@
-package com.bridgelabz.microservices.rabbitmq;
+package com.bridgelabz.microservices.configuration;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.bridgelabz.microservices.rabbitmq.QueueConsumer;
+
 @Configuration
-public class ConsumerConfiguration {
+public class RabbitMQConsumerConfiguration {
 	
 	private static final String LISTENER_METHOD = "receiveMessage";
 	

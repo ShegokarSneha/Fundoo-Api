@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.microservices.Utility.AccessToken;
+import com.bridgelabz.microservices.Utility.RedisUtil;
 import com.bridgelabz.microservices.dto.ForgetPasswordDto;
 import com.bridgelabz.microservices.dto.LoginDto;
 import com.bridgelabz.microservices.dto.MailDto;
@@ -49,12 +50,17 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	@Autowired
 	private QueueProducer queueProducer;
+	
+	@Autowired
+	private RedisUtil redisUtil;
 
 	private ResponseStatus response;
 
 	private MailDto maildto = new MailDto();
 
 	private Path path = Paths.get("/home/admin1/Downloads");
+	
+	private String key = "User";
 
 	// ========================= Registering User ============================//
 
@@ -82,6 +88,8 @@ public class UserServiceImplementation implements UserServiceInterface {
 			userRepository.save(user);
 			user.setToken(accessToken.generateAccessToken(user.getUserid()));
 			user.setDate(LocalDateTime.now());
+			redisUtil.putMap(key, user.getEmail(),user.getToken());
+//			System.out.println(key);
 			userRepository.save(user);
 
 			// Registration Status

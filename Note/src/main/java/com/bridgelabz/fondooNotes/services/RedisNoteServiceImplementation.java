@@ -22,9 +22,10 @@ import com.bridgelabz.fondooNotes.repository.NoteRepository;
 import com.bridgelabz.fondooNotes.response.ResponseCode;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 import com.bridgelabz.fondooNotes.uitility.AccessToken;
+import com.bridgelabz.fondooNotes.uitility.RedisUtil;
 
-@Service("NoteServiceInterface")
-public class NoteServiceImplementation implements NoteServiceInterface {
+@Service("RedisNoteServiceInterface")
+public class RedisNoteServiceImplementation implements RedisNoteServiceInterface {
 
 	@Autowired
 	private NoteRepository noteRepository;
@@ -41,14 +42,21 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	@Autowired
 	private QueueProducer queueProducer;
 
+	@Autowired
+	private RedisUtil redisUtil;
+
 	private ResponseStatus response;
 
 	MailDto maildto = new MailDto();
 
+	private String key = "User";
+
 	// ================= Create Note ====================//
 
 	@Override
-	public ResponseStatus createNote(NoteDto notedto, String token) {
+	public ResponseStatus createNote(NoteDto notedto, String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 
 		if (notedto.getTitle().isEmpty() || notedto.getDescription().isEmpty()) {
@@ -74,10 +82,12 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Update Note ====================//
 
 	@Override
-	public ResponseStatus updateNote(NoteDto notedto, String token, String noteid) {
+	public ResponseStatus updateNote(NoteDto notedto, String emailid, String noteid) {
 		if (notedto.getTitle().isEmpty() && notedto.getDescription().isEmpty()) {
 			throw new BlankException("Title And Description Can Not Be Empty.");
 		}
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
@@ -100,7 +110,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Delete Note ====================//
 
 	@Override
-	public ResponseStatus deleteNote(String token, String noteid) {
+	public ResponseStatus deleteNote(String emailid, String noteid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -120,7 +132,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Archive Note ====================//
 
 	@Override
-	public ResponseStatus archiveNote(String token, String noteid) {
+	public ResponseStatus archiveNote(String emailid, String noteid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -143,7 +157,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Pinned Note ====================//
 
 	@Override
-	public ResponseStatus pinnedNote(String token, String noteid) {
+	public ResponseStatus pinnedNote(String emailid, String noteid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -166,7 +182,11 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Trashed Note ====================//
 
 	@Override
-	public ResponseStatus trashNote(String token, String noteid) {
+	public ResponseStatus trashNote(String emailid, String noteid) {
+		System.out.println(emailid);
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
+//		String token = (String) redisTemplate.opsForHash().get(key, emailid);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -202,7 +222,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Update Color of Note ====================//
 
 	@Override
-	public ResponseStatus updateColor(String token, String noteid, String color) {
+	public ResponseStatus updateColor(String emailid, String noteid, String color) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
 		already.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -217,7 +239,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================ Get All Notes of specific User =============//
 
 	@Override
-	public ResponseStatus getUserNotes(String token) {
+	public ResponseStatus getUserNotes(String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		List<Note> notelist = noteRepository.findAllByUserid(userid);
 		if (notelist.isEmpty()) {
@@ -232,7 +256,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Setting Remainder for Note ====================//
 
 	@Override
-	public ResponseStatus setReminder(String noteid, String token, String reminder) {
+	public ResponseStatus setReminder(String noteid, String emailid, String reminder) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
@@ -285,7 +311,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Delete Remainder for Note ====================//
 
 	@Override
-	public ResponseStatus deleteReminder(String noteid, String token) {
+	public ResponseStatus deleteReminder(String noteid, String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		System.out.println(userid);
 		Optional<Note> already = noteRepository.findByUseridAndNoteid(userid, noteid);
@@ -302,7 +330,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ============ Add Collaborator to Note ==================//
 
 	@Override
-	public ResponseStatus collaborateUsers(String noteid, String token, CollaboratorDto collaboratordto) {
+	public ResponseStatus collaborateUsers(String noteid, String emailid, CollaboratorDto collaboratordto) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<Note> note = noteRepository.findByUseridAndNoteid(userid, noteid);
 		note.orElseThrow(() -> new NotFoundException("Note Not Found With Given Id"));
@@ -341,7 +371,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ============= Sort Notes By Name In Ascending Order =============//
 
 	@Override
-	public ResponseStatus sortByTitleAscendingOrder(String token) {
+	public ResponseStatus sortByTitleAscendingOrder(String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		List<Note> notelist = noteRepository.findAllByUserid(userid);
 		if (notelist.isEmpty()) {
@@ -356,7 +388,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ============= Sort Notes By Name In Descending Order =============//
 
 	@Override
-	public ResponseStatus sortByTitleDescendingOrder(String token) {
+	public ResponseStatus sortByTitleDescendingOrder(String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		List<Note> notelist = noteRepository.findAllByUserid(userid);
 		if (notelist.isEmpty()) {
@@ -371,7 +405,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ============= Sort Notes By Date In Ascending Order =============//
 
 	@Override
-	public ResponseStatus sortByDateAscendingOrder(String token) {
+	public ResponseStatus sortByDateAscendingOrder(String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		List<Note> notelist = noteRepository.findAllByUserid(userid);
 		if (notelist.isEmpty()) {
@@ -386,7 +422,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ============= Sort Notes By Date In Ascending Order =============//
 
 	@Override
-	public ResponseStatus sortByDateDescendingOrder(String token) {
+	public ResponseStatus sortByDateDescendingOrder(String emailid) {
+		String token = redisUtil.getMap(key, emailid);
+		System.out.println(token);
 		String userid = accessToken.verifyAccessToken(token);
 		List<Note> notelist = noteRepository.findAllByUserid(userid);
 		if (notelist.isEmpty()) {

@@ -1,4 +1,4 @@
-package com.bridgelabz.microservices.rabbitmq;
+package com.bridgelabz.fondooNotes.configuration;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ProducerConfiguration {
+public class RabbitMQProducerConfiguration {
 	
 	@Value("${fanout.exchange}")
 	private String fanoutExchange;
