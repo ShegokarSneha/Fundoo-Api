@@ -1,4 +1,4 @@
-package com.bridgelabz.fondooNotes.services;
+ package com.bridgelabz.fondooNotes.services;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -48,7 +48,7 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Create Note ====================//
 
 	@Override
-	public ResponseStatus createNote(NoteDto notedto, String token) {
+	public Note createNote(NoteDto notedto, String token) {
 		String userid = accessToken.verifyAccessToken(token);
 
 		if (notedto.getTitle().isEmpty() || notedto.getDescription().isEmpty()) {
@@ -66,9 +66,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		System.out.println(note.getUserid());
 		noteRepository.save(note);
 
-		response = responseCode.getResponse(201, "Note Created Successfully...!", notedto);
+//		response = responseCode.getResponse(201, "Note Created Successfully...!", notedto);
 		System.out.println("Note Created Successfully...!");
-		return response;
+		return note;
 	}
 
 	// ================= Update Note ====================//

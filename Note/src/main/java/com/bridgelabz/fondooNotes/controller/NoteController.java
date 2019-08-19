@@ -5,15 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
+import com.bridgelabz.fondooNotes.model.Note;
+import com.bridgelabz.fondooNotes.response.ResponseCode;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 import com.bridgelabz.fondooNotes.services.NoteServiceInterface;
 
@@ -23,12 +25,18 @@ public class NoteController {
 
 	@Autowired
 	private NoteServiceInterface iNoteServiceInterface;
+	
+	@Autowired
+	private ResponseCode responsecode;
+	
+	ResponseStatus response;
 
 	/********************* Create Note **********************/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseStatus> createNote(@RequestBody NoteDto notedto, @RequestHeader String token) {
 		System.out.println("In Create Note");
-		ResponseStatus response = iNoteServiceInterface.createNote(notedto, token);
+		Note note = iNoteServiceInterface.createNote(notedto, token);
+		response = responsecode.getResponse(201, "Note Created Successfully...!", note);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.CREATED);
 	}
 
@@ -93,8 +101,8 @@ public class NoteController {
 
 	/*************** Get User Note List *****************/
 
-	@GetMapping(value = "/usernotes")
-	public ResponseEntity<ResponseStatus> getUserNotes(@RequestHeader String token) {
+	@GetMapping(value = "/usernotes/{token}")
+	public ResponseEntity<ResponseStatus> getUserNotes(@PathVariable("token") String token) {
 		System.out.println("In Get User Notes");
 		ResponseStatus response = iNoteServiceInterface.getUserNotes(token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
@@ -164,5 +172,4 @@ public class NoteController {
 		ResponseStatus response = iNoteServiceInterface.sortByDateDescendingOrder(token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
-
 }

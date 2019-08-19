@@ -1,5 +1,7 @@
 package com.bridgelabz.microservices.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.microservices.dto.ForgetPasswordDto;
 import com.bridgelabz.microservices.dto.LoginDto;
 import com.bridgelabz.microservices.dto.RegisterDto;
 import com.bridgelabz.microservices.dto.ResetPasswordDto;
+import com.bridgelabz.microservices.model.User;
+import com.bridgelabz.microservices.response.ResponseCode;
 import com.bridgelabz.microservices.response.ResponseStatus;
 import com.bridgelabz.microservices.service.UserServiceInterface;
 
@@ -26,13 +31,22 @@ public class UserController {
 
 	@Autowired
 	private UserServiceInterface iUserService;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private ResponseCode responseCode;
+	
+	private ResponseStatus response;
 
 	/***************** Registration Controller ******************/
 
 	@PostMapping(value = "/register")
 	public ResponseEntity<ResponseStatus> registerUser(@RequestBody RegisterDto register) {
 		System.out.println("In Register User");
-		ResponseStatus response = iUserService.registration(register);
+		User user = iUserService.registration(register);
+		response = responseCode.getResponse(201, "User Registered Successfully...", user);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 
@@ -78,7 +92,8 @@ public class UserController {
 	@GetMapping(value = "/getall")
 	public ResponseEntity<ResponseStatus> getAllUsers() {
 		System.out.println("Get all Users");
-		ResponseStatus response = iUserService.getAllUsers();
+		List<User> userlist = iUserService.getAllUsers();
+		response = responseCode.getResponse(200, "User List", userlist);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 
@@ -98,6 +113,25 @@ public class UserController {
 	public ResponseEntity<ResponseStatus> getProfilePic(@RequestHeader String token){
 		System.out.println("Get Profile Picture");
 		ResponseStatus response = iUserService.getProfilePic(token);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	/******************* Get User Notes List ********************/
+	
+	@GetMapping(value = "/getnotes")
+	public ResponseEntity<ResponseStatus> getNotes(@RequestHeader String token){
+		System.out.println("In Get All Note of User By Rest Template");
+		ResponseStatus response = restTemplate.getForObject("http://localhost:8081/note/usernotes/"+token, ResponseStatus.class);
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
+	}
+	
+	/***************************** Get User ***************************/
+
+	@GetMapping(value = "/getuser")
+	public ResponseEntity<ResponseStatus> getUser(@RequestHeader String token) {
+		System.out.println("Get User");
+		User user= iUserService.getUser(token);
+		response = responseCode.getResponse(200, "User get Successfully", user);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 

@@ -7,6 +7,16 @@ public class RegisterDto {
 	private String email;
 	private String password;
 
+	
+	public RegisterDto(String firstname, String lastname, String username, String email, String password) {
+		super();
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.username = username;
+		this.email = email;
+		this.password = password;
+	}
+
 	public String getFirstname() {
 		return firstname;
 	}

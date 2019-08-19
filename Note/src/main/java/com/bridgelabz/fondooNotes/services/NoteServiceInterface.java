@@ -2,11 +2,12 @@ package com.bridgelabz.fondooNotes.services;
 
 import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
+import com.bridgelabz.fondooNotes.model.Note;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 
 public interface NoteServiceInterface {
 
-	public ResponseStatus createNote(NoteDto notedto, String token);
+	public Note createNote(NoteDto notedto, String token);
 
 	public ResponseStatus updateNote(NoteDto notedto, String token, String noteid);
 

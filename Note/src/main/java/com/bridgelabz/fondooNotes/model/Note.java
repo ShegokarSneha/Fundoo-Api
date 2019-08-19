@@ -43,6 +43,11 @@ public class Note {
 
 	@Field("Reminder")
 	private LocalDateTime reminder;
+	
+	public Note(String title, String description) {
+		this.title = title;
+		this.description = description;
+	}
 
 	@DBRef
 	@Field("Label_List")

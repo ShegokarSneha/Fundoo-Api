@@ -38,6 +38,18 @@ public class User {
 	@Field("Profile_Pic")
 	private String profilepic;
 
+	public User() {
+
+	}
+
+	public User(String firstname, String lastname, String username, String email, String password) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.username = username;
+		this.email = email;
+		this.password = password;
+	}
+
 	public String getUserid() {
 		return userid;
 	}

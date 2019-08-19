@@ -3,6 +3,10 @@ package com.bridgelabz.fondooNotes.dto;
 public class LabelDto {
 
 	private String labelname;
+	
+	public LabelDto(String labelname) {
+		this.labelname = labelname;
+	}
 
 	public String getLabelname() {
 		return labelname;

@@ -23,6 +23,7 @@ import com.bridgelabz.microservices.dto.LoginDto;
 import com.bridgelabz.microservices.dto.MailDto;
 import com.bridgelabz.microservices.dto.RegisterDto;
 import com.bridgelabz.microservices.dto.ResetPasswordDto;
+import com.bridgelabz.microservices.exceptions.AlreadyExistsException;
 import com.bridgelabz.microservices.exceptions.NotFoundException;
 import com.bridgelabz.microservices.model.User;
 import com.bridgelabz.microservices.rabbitmq.QueueProducer;
@@ -65,19 +66,21 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ========================= Registering User ============================//
 
 	@Override
-	public ResponseStatus registration(RegisterDto register) {
-		boolean alreadyUser = userRepository.findByEmail(register.getEmail()).isPresent();
-		if (alreadyUser) {
+	public User registration(RegisterDto register) {
+		User user;
+		Optional<User> alreadyUser = userRepository.findByEmail(register.getEmail());
 
-			// throw new UserAlreadyExistsException();
-			response = responseCode.getResponse(200, "User Already Exist...", register);
-			System.out.println("\nUser Already Registered");
+		if (alreadyUser.isPresent()) {
+
+		 throw new AlreadyExistsException();
+//			response = responseCode.getResponse(200, "User Already Exist...", register);
+//			System.out.println("\nUser Already Registered");
 
 		} else {
 
 			// Successful Registration
 
-			User user = modelMapper.map(register, User.class);
+			user = modelMapper.map(register, User.class);
 
 			// Encoding Password
 
@@ -109,10 +112,10 @@ public class UserServiceImplementation implements UserServiceInterface {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			response = responseCode.getResponse(201, "User Registered Successfully...", register);
+//			response = responseCode.getResponse(201, "User Registered Successfully...", register);
 			System.out.println("\nUser Registered Successfully...");
 		}
-		return response;
+		return user;
 
 	}
 
@@ -221,11 +224,11 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ================ Get All Users ==================//
 
 	@Override
-	public ResponseStatus getAllUsers() {
+	public List<User> getAllUsers() {
 		List<User> userlist = userRepository.findAll();
-		response = responseCode.getResponse(200, "User List", userlist);
+//		response = responseCode.getResponse(200, "User List", userlist);
 		System.out.println("All User get Successfully");
-		return response;
+		return userlist;
 	}
 
 	// ================ Upload Profile Picture ==================//
@@ -260,6 +263,18 @@ public class UserServiceImplementation implements UserServiceInterface {
 		response = responseCode.getResponse(200, "Profile Picture get Successfully", pic);
 		System.out.println("Profile Picture get Successfully");
 		return response;
+	}
+	
+	// ================ Get User ==================//
+
+	@Override
+	public User getUser(String token) {
+		String userid = accessToken.verifyAccessToken(token);
+		Optional<User> already = userRepository.findByUserid(userid);
+		already.orElseThrow(()-> new NotFoundException());
+//		response = responseCode.getResponse(200, "User get Successfully", already.get());
+		System.out.println("User get Successfully");
+		return already.get();
 	}
 
 }

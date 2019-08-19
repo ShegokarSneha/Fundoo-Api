@@ -22,6 +22,10 @@ public class Label {
 	@Field("Update_Time")
 	private LocalDateTime updated;
 	
+	public Label(String labelname) {
+		this.labelname = labelname;
+	}
+	
 	public String getLabelid() {
 		return labelid;
 	}
