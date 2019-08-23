@@ -9,7 +9,7 @@ import com.bridgelabz.microservices.dto.MailDto;
 
 @Component
 public class QueueProducer {
-	// protected Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Value("${fanout.exchange}")
 	private String fanoutExchange;
 	private final RabbitTemplate rabbitTemplate;

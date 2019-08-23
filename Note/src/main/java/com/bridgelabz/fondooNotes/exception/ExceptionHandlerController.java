@@ -24,7 +24,7 @@ public class ExceptionHandlerController {
 	}
 	
 	@ExceptionHandler(value = AlreadyExistsException.class)
-	public final ResponseEntity<ResponseStatus> alreadyExistsExceptionHandler(AlreadyExistsException e, Object obj){
+	public final ResponseEntity<ResponseStatus> alreadyExistsExceptionHandler(AlreadyExistsException e){
 		response = responseCode.getResponse(400, e.getMessage(), null);
 		System.out.println(e.getMessage());
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.BAD_REQUEST);

@@ -15,16 +15,23 @@ public class ExceptionHandlerController {
 	@Autowired
 	private ResponseCode responseCode;
 	private ResponseStatus response;
+	
+	@ExceptionHandler(value = BlankException.class)
+	public ResponseEntity<ResponseStatus> blankExceptionHandler(BlankException e) {
+		response = responseCode.getResponse(404, e.getMessage(), null);
+		System.out.println(e.getMessage());
+		return new ResponseEntity<ResponseStatus>(response, HttpStatus.NOT_FOUND);
+	}
 
-	@ExceptionHandler(value = UserNotFoundException.class)
-	public ResponseEntity<ResponseStatus> exceptionHandling() {
-		response = responseCode.getResponse(404, "User Not Found", null);
+	@ExceptionHandler(value = NotFoundException.class)
+	public ResponseEntity<ResponseStatus> exceptionHandling(NotFoundException e) {
+		response = responseCode.getResponse(404, e.getMessage(), null);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.NOT_FOUND);
 	}
 	
-	@ExceptionHandler(value = UserAlreadyExistsException.class)
-	public final ResponseEntity<ResponseStatus> exceptionHandler(){
-		response = responseCode.getResponse(400, "User Already Exist...", null);
+	@ExceptionHandler(value = AlreadyExistsException.class)
+	public final ResponseEntity<ResponseStatus> exceptionHandler(AlreadyExistsException e){
+		response = responseCode.getResponse(400, e.getMessage(), null);
 		System.out.println("\nUser Already Registered");
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.BAD_REQUEST);
 	}

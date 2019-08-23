@@ -15,7 +15,7 @@ import com.bridgelabz.Fundoo.dto.LoginDto;
 import com.bridgelabz.Fundoo.dto.MailDto;
 import com.bridgelabz.Fundoo.dto.RegisterDto;
 import com.bridgelabz.Fundoo.dto.ResetPasswordDto;
-import com.bridgelabz.Fundoo.exceptionhandling.UserNotFoundException;
+import com.bridgelabz.Fundoo.exceptionhandling.NotFoundException;
 import com.bridgelabz.Fundoo.model.User;
 import com.bridgelabz.Fundoo.rabbitmq.QueueProducer;
 import com.bridgelabz.Fundoo.repository.UserRepository;
@@ -32,7 +32,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
-	private AccessToken accessToken;
+	private AccessToken accesstoken;
 	@Autowired
 	private ResponseCode responseCode;
 	@Autowired
@@ -65,7 +65,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 			// Generating access Token
 
 			userRepository.save(user);
-			user.setToken(accessToken.generateAccessToken(user.getUserid()));
+			user.setToken(accesstoken.generateAccessToken(user.getUserid()));
 			user.setDate(LocalDateTime.now());
 			userRepository.save(user);
 
@@ -85,7 +85,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			response = responseCode.getResponse(201, "User Registered Successfully...", register);
+			response = responseCode.getResponse(201, "User Registered Successfully...", user);
 			System.out.println("\nUser Registered Successfully...");
 		}
 		return response;
@@ -95,12 +95,16 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ======================== Verify User ======================//
 
 	public ResponseStatus verifyUser(String token) {
-		String userid = accessToken.verifyAccessToken(token);
+		System.out.println(token);
+		String userid = accesstoken.verifyAccessToken(token);
+		System.out.println("userid"+userid);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
-		} else {
+		alreadyuser.orElseThrow(()-> new NotFoundException("User Does Not Exist"));
+
+//		if (alreadyuser.isEmpty()) {
+//			System.out.println("User Not Found");
+//			throw new UserNotFoundException();
+//		} else {
 			User verifieduser = alreadyuser.get();
 			if (verifieduser.isVerfied() == false) {
 
@@ -112,7 +116,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 				response = responseCode.getResponse(200, "User verified already...", verifieduser);
 				System.out.println("User Verfied already");
 			}
-		}
+		
 		return response;
 	}
 
@@ -121,11 +125,13 @@ public class UserServiceImplementation implements UserServiceInterface {
 	public ResponseStatus login(LoginDto login) {
 		String password = login.getPassword();
 		Optional<User> alreadyuser = userRepository.findByEmail(login.getEmail());
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
+		alreadyuser.orElseThrow(()-> new NotFoundException("User Does Not Exist"));
 
-		} else {
+//		if (alreadyuser.isEmpty()) {
+//			System.out.println("User Not Found");
+//			throw new UserNotFoundException();
+//
+//		} else {
 
 			if (alreadyuser.get().isVerfied() == true) {
 				if (passwordEncoder.matches(password, alreadyuser.get().getPassword())) {
@@ -146,7 +152,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 				response = responseCode.getResponse(204, "Email Not verified", alreadyuser.get());
 				System.out.println("User Not Verified...");
 			}
-		}
+		
 		return response;
 	}
 
@@ -154,11 +160,14 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	public ResponseStatus forgetPassword(ForgetPasswordDto forgetdto) {
 		Optional<User> alreadyuser = userRepository.findByEmail(forgetdto.getEmail());
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
+		alreadyuser.orElseThrow(()-> new NotFoundException("User Does Not Exist"));
 
-		} else {
+		
+//		if (alreadyuser.isEmpty()) {
+//			System.out.println("User Not Found");
+//			throw new UserNotFoundException();
+//
+//		} else {
 
 			String url = "http://localhost:8080/user/resetpassword/" + alreadyuser.get().getToken();
 
@@ -176,31 +185,34 @@ public class UserServiceImplementation implements UserServiceInterface {
 				e.printStackTrace();
 			}
 			response = responseCode.getResponse(200,
-					"Request to reset password received." + "\nCheck your inbox for the reset link.", forgetdto);
+					"Request to reset password received." + "Check your inbox for the reset link.", forgetdto);
 			System.out.println("Request to reset password received." + "\nCheck your inbox for the reset link.");
-		}
+		
 		return response;
 	}
 
 	// ======================== Reset Password ===========================//
 
 	public ResponseStatus resetPassword(String token, ResetPasswordDto setpasswordDto) {
-		String userid = accessToken.verifyAccessToken(token);
+		System.out.println(token);
+		String userid = accesstoken.verifyAccessToken(token);
+//		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> alreadyuser = userRepository.findByUserid(userid);
+		alreadyuser.orElseThrow(()-> new NotFoundException("User Does Not Exist"));
 
-		if (alreadyuser.isEmpty()) {
-			System.out.println("User Not Found");
-			throw new UserNotFoundException();
-		} else {
+//		if (alreadyuser.isEmpty()) {
+//			System.out.println("User Not Found");
+//			throw new UserNotFoundException();
+//		} else {
 			User resetuser = alreadyuser.get();
 			System.out.println(setpasswordDto.getPassword());
 			resetuser.setPassword(passwordEncoder.encode(setpasswordDto.getPassword()));
 			userRepository.save(resetuser);
 
 			response = responseCode.getResponse(200, "You have successfully reset your password. You may now login.",
-					setpasswordDto);
+					resetuser);
 			System.out.println("Password Reset Successfully...!");
-		}
+	
 		return response;
 	}
 

@@ -21,7 +21,7 @@ public class AccessToken {
 
 		String token = null;
 		try {
-			token = JWT.create().withClaim("userId", userid).sign(Algorithm.HMAC256(secret));
+			token = JWT.create().withClaim("userid", userid).sign(Algorithm.HMAC256(secret));
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,6 +43,7 @@ public class AccessToken {
 			decodedJWT.getAlgorithm();
 			Claim claim = decodedJWT.getClaim("userid");
 			userid = claim.asString();
+			System.out.println(userid);
 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

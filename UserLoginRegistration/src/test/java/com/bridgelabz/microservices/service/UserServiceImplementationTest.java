@@ -58,7 +58,7 @@ class UserServiceImplementationTest {
 	void testLogin() {
 		LoginDto login = new LoginDto("sneha@gmail.com", "sneha123");
 		Optional<User> already = Optional.of(user);
-		when(userRepository.findByEmail(anyString()).isEmpty()).thenThrow(new NotFoundException());
+		when(userRepository.findByEmail(anyString()).empty()).thenThrow(new NotFoundException());
 		user.setVerfied(true);
 		when(passwordEncoder.matches(login.getPassword(), user.getPassword())).thenReturn(true);
 	}
@@ -77,7 +77,7 @@ class UserServiceImplementationTest {
 	void testGetUser() {
 		User user = new User("Sneha", "Shegokar", "sneha", "sneha@gmail.com", "sneha123");
 		Optional<User> already = Optional.of(user);
-		when(userRepository.findByUserid(anyString()).isEmpty()).thenThrow(new NotFoundException());
+		when(userRepository.findByUserid(anyString()).empty()).thenThrow(new NotFoundException());
 		assertNotNull(already.get());
 		assertEquals(user.getFirstname(), already.get().getFirstname());
 	}

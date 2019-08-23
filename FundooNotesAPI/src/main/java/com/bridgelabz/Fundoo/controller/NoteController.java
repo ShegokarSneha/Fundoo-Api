@@ -85,13 +85,4 @@ public class NoteController {
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 
-	/************** Sort Note By Name In Ascending Order ************/
-
-	@GetMapping(value = "/sortbynameasend/{token}")
-	public ResponseEntity<ResponseStatus> sortByNameAscendingOrder(@PathVariable("token") String token) {
-		System.out.println("Sorting Notes In Ascending Order");
-		ResponseStatus response = iNoteServiceInterface.sortByNameAscendingOrder(token);
-		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
-	}
-
 }

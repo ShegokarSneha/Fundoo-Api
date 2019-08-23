@@ -29,6 +29,6 @@ public interface UserServiceInterface {
 
 	public ResponseStatus getProfilePic(String token);
 	
-	public User getUser(String token);
+	public ResponseStatus getUser(String token);
 
 }

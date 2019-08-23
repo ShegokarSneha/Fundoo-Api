@@ -1,10 +1,10 @@
 package com.bridgelabz.Fundoo.exceptionhandling;
 
-public class UserNotFoundException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public UserNotFoundException() {
+	public NotFoundException(String message) {
 		super();
 	}
 

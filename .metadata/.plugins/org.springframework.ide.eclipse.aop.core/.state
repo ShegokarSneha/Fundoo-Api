@@ -12,4 +12,5 @@
 <aop-project name="Spring DI Setter Injection"/>
 <aop-project name="Spring AOP Annotation"/>
 <aop-project name="Spring Annotation ArrayList"/>
+<aop-project name="Task"/>
 </aop-reference-model>

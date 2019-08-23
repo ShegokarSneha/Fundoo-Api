@@ -26,8 +26,7 @@ public class NoteServiceImplementationTest {
 	@Mock
 	NoteRepository noteRepository;
 
-	Note user = new Note("Today", "Holiday");
-	Note user1 = new Note("smita", "Shegokar");
+	
 	List<Note> notelist = new ArrayList<>();
 
 	@Before
@@ -37,23 +36,29 @@ public class NoteServiceImplementationTest {
 
 	@Test
 	public void testCreateNote() {
-		NoteDto notedto = new NoteDto("Today", "Holiday");
-		Note note = new Note("Today", "Holiday");
-		when(modelMapper.map(notedto, Note.class)).thenReturn(note);
-		when(noteRepository.save(note)).thenReturn(note);
+		Note user = new Note();
+		NoteDto notedto = new NoteDto();
+		user.setTitle("Today");
+		user.setDescription("Holiday");
+		when(modelMapper.map(notedto, Note.class)).thenReturn(user);
+		when(noteRepository.save(user)).thenReturn(user);
 	}
 
 	@Test
 	public void testGetAllNotes() {
+		Note user = new Note();
+		user.setTitle("Today");
+		user.setDescription("Holiday");
 		notelist.add(user);
-		notelist.add(user1);
 		when(noteRepository.findAll()).thenReturn(notelist);
 	}
 
 	@Test
 	public void testgetUserNotes() {
+		Note user = new Note();
+		user.setTitle("Today");
+		user.setDescription("Holiday");
 		notelist.add(user);
-		notelist.add(user1);
 		when(noteRepository.findAllByUserid(anyString())).thenReturn(notelist);
 	}
 }

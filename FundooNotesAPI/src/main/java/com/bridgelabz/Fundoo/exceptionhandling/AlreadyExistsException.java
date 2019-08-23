@@ -1,10 +1,10 @@
 package com.bridgelabz.Fundoo.exceptionhandling;
 
-public class UserAlreadyExistsException extends RuntimeException{
+public class AlreadyExistsException extends RuntimeException{
 	
 	private static final long serialVersionUID = 1L;
 	
-	public UserAlreadyExistsException() {
+	public AlreadyExistsException(String message) {
 		super();
 	}
 }

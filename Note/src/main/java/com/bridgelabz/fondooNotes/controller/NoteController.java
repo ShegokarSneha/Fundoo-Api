@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.NoteDto;
-import com.bridgelabz.fondooNotes.model.Note;
-import com.bridgelabz.fondooNotes.response.ResponseCode;
 import com.bridgelabz.fondooNotes.response.ResponseStatus;
 import com.bridgelabz.fondooNotes.services.NoteServiceInterface;
 
@@ -26,17 +24,13 @@ public class NoteController {
 	@Autowired
 	private NoteServiceInterface iNoteServiceInterface;
 	
-	@Autowired
-	private ResponseCode responsecode;
-	
 	ResponseStatus response;
 
 	/********************* Create Note **********************/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseStatus> createNote(@RequestBody NoteDto notedto, @RequestHeader String token) {
 		System.out.println("In Create Note");
-		Note note = iNoteServiceInterface.createNote(notedto, token);
-		response = responsecode.getResponse(201, "Note Created Successfully...!", note);
+		ResponseStatus response = iNoteServiceInterface.createNote(notedto, token);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.CREATED);
 	}
 

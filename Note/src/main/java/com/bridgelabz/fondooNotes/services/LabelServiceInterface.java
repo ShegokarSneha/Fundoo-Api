@@ -17,11 +17,11 @@ public interface LabelServiceInterface {
 	public ResponseStatus getUserLabels(String token);
 	
 	public ResponseStatus getAll();
-	
+
 	public ResponseStatus addLabeltoNote(String token, String labelid, String noteid);
-	
+
 	public ResponseStatus removeLabelfromNote(String token, String labelid, String noteid);
-	
+
 	public ResponseStatus getLabelsofNotes(String token, String noteid);
 
 }

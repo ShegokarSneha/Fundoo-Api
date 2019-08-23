@@ -127,11 +127,11 @@ public class UserController {
 	
 	/***************************** Get User ***************************/
 
-	@GetMapping(value = "/getuser")
-	public ResponseEntity<ResponseStatus> getUser(@RequestHeader String token) {
+	@GetMapping(value = "/getuser/{token}")
+	public ResponseEntity<ResponseStatus> getUser(@PathVariable("token") String token) {
 		System.out.println("Get User");
-		User user= iUserService.getUser(token);
-		response = responseCode.getResponse(200, "User get Successfully", user);
+		ResponseStatus response = iUserService.getUser(token);
+		response = responseCode.getResponse(200, "User get Successfully", response);
 		return new ResponseEntity<ResponseStatus>(response, HttpStatus.OK);
 	}
 

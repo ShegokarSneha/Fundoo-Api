@@ -245,6 +245,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(fileid);
 		already.get().setProfilepic(fileid);
 		userRepository.save(already.get());
 		response = responseCode.getResponse(200, "Profile Picture set Successfully", fileid);
@@ -268,13 +269,13 @@ public class UserServiceImplementation implements UserServiceInterface {
 	// ================ Get User ==================//
 
 	@Override
-	public User getUser(String token) {
+	public ResponseStatus getUser(String token) {
 		String userid = accessToken.verifyAccessToken(token);
 		Optional<User> already = userRepository.findByUserid(userid);
 		already.orElseThrow(()-> new NotFoundException());
-//		response = responseCode.getResponse(200, "User get Successfully", already.get());
+		response = responseCode.getResponse(200, "User get Successfully", already.get());
 		System.out.println("User get Successfully");
-		return already.get();
+		return response;
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.bridgelabz.fondooNotes.dto.CollaboratorDto;
 import com.bridgelabz.fondooNotes.dto.MailDto;
@@ -40,6 +41,9 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 
 	@Autowired
 	private QueueProducer queueProducer;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	private ResponseStatus response;
 
@@ -48,8 +52,10 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 	// ================= Create Note ====================//
 
 	@Override
-	public Note createNote(NoteDto notedto, String token) {
+	public ResponseStatus createNote(NoteDto notedto, String token) {
+		ResponseStatus user = restTemplate.getForObject("http://localhost:8080/user/getuser/"+token, ResponseStatus.class);
 		String userid = accessToken.verifyAccessToken(token);
+		if(!(user.getMessage() == null)) {
 
 		if (notedto.getTitle().isEmpty() || notedto.getDescription().isEmpty()) {
 			throw new BlankException("Title And Description Can Not Be Empty.");
@@ -66,9 +72,13 @@ public class NoteServiceImplementation implements NoteServiceInterface {
 		System.out.println(note.getUserid());
 		noteRepository.save(note);
 
-//		response = responseCode.getResponse(201, "Note Created Successfully...!", notedto);
+		response = responseCode.getResponse(201, "Note Created Successfully...!", note);
 		System.out.println("Note Created Successfully...!");
-		return note;
+		}
+		else {
+			throw new NotFoundException("User Not Found");
+		}
+		return response;
 	}
 
 	// ================= Update Note ====================//
